@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SafeRoute — Find help, know the steps</title>
+<meta name="description" content="Find your nearest A&E, get immediate first aid instructions, and safety guidance for walking, driving and public transport.">
+<meta name="theme-color" content="#14171C">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Persistent emergency bar. Always visible. Never scrolls away. -->
+  <div class="sos-bar" role="banner">
+    <a href="tel:999" class="sos-bar__call">
+      <span class="sos-bar__label">Life-threatening emergency</span>
+      <span class="sos-bar__number">Call 999</span>
+    </a>
+    <span class="sos-bar__connectivity" id="connectivity-indicator" aria-live="polite">Offline-ready</span>
+  </div>
+
+  <header class="app-header">
+    <div class="app-header__mark" aria-hidden="true">
+      <span class="app-header__dot"></span>
+    </div>
+    <div class="app-header__text">
+      <p class="app-header__eyebrow">Data coverage: starter dataset — see notice in A&amp;E tab</p>
+      <h1 class="app-header__title">SafeRoute</h1>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <!-- A&E FINDER -->
+    <section class="panel" id="panel-ae" data-panel aria-labelledby="tab-ae">
+      <div class="panel__intro">
+        <h2>Nearest A&amp;E</h2>
+        <p class="panel__lede">Share your location to sort by distance, or browse the full list.</p>
+      </div>
+
+      <div class="notice notice--warn">
+        <p><strong>Verify before you rely on this.</strong> This directory is a development starter list of roughly 30 major NHS A&amp;E departments — it has not been checked against the live NHS Organisation Data Service, and A&amp;E departments do occasionally close, relocate, or divert. For a genuine emergency, call 999. To confirm your nearest open A&amp;E right now, use <a href="https://www.nhs.uk/service-search/other-services/Accident-and-emergency-services/LocationSearch/428" target="_blank" rel="noopener">nhs.uk/service-search</a>.</p>
+      </div>
+
+      <button class="btn btn--primary" id="btn-locate">Use my location</button>
+      <p class="field-status" id="locate-status" aria-live="polite"></p>
+
+      <ul class="hospital-list" id="hospital-list"></ul>
+    </section>
+
+    <!-- FIRST AID -->
+    <section class="panel" id="panel-firstaid" data-panel hidden aria-labelledby="tab-firstaid">
+      <div class="panel__intro">
+        <h2>First aid, step by step</h2>
+        <p class="panel__lede">For a genuine emergency, call 999 first, then start first aid while you wait if it's safe to do so.</p>
+      </div>
+
+      <div class="notice">
+        <p>This is general guidance, not a substitute for accredited training. For a full course, contact <a href="https://www.sja.org.uk" target="_blank" rel="noopener">St John Ambulance</a> or the <a href="https://www.redcross.org.uk" target="_blank" rel="noopener">British Red Cross</a>.</p>
+      </div>
+
+      <div class="accordion" id="first-aid-accordion"></div>
+    </section>
+
+    <!-- ON FOOT -->
+    <section class="panel" id="panel-walking" data-panel hidden aria-labelledby="tab-walking">
+      <div class="panel__intro">
+        <h2>On foot</h2>
+        <p class="panel__lede">Awareness habits for walking and being out alone.</p>
+      </div>
+      <div class="accordion" id="walking-accordion"></div>
+    </section>
+
+    <!-- ON THE MOVE -->
+    <section class="panel" id="panel-travel" data-panel hidden aria-labelledby="tab-travel">
+      <div class="panel__intro">
+        <h2>On the move</h2>
+        <p class="panel__lede">Driving and public transport awareness.</p>
+      </div>
+      <div class="accordion" id="travel-accordion"></div>
+    </section>
+
+  </main>
+
+  <nav class="tabbar" role="tablist" aria-label="Sections">
+    <button class="tabbar__item is-active" id="tab-ae" data-target="panel-ae" role="tab" aria-selected="true" aria-controls="panel-ae">
+      <span class="tabbar__icon" aria-hidden="true">✚</span>
+      <span>A&amp;E</span>
+    </button>
+    <button class="tabbar__item" id="tab-firstaid" data-target="panel-firstaid" role="tab" aria-selected="false" aria-controls="panel-firstaid">
+      <span class="tabbar__icon" aria-hidden="true">⛑</span>
+      <span>First Aid</span>
+    </button>
+    <button class="tabbar__item" id="tab-walking" data-target="panel-walking" role="tab" aria-selected="false" aria-controls="panel-walking">
+      <span class="tabbar__icon" aria-hidden="true">🚶</span>
+      <span>On Foot</span>
+    </button>
+    <button class="tabbar__item" id="tab-travel" data-target="panel-travel" role="tab" aria-selected="false" aria-controls="panel-travel">
+      <span class="tabbar__icon" aria-hidden="true">🚗</span>
+      <span>On the Move</span>
+    </button>
+  </nav>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

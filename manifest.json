@@ -1,0 +1,25 @@
+{
+  "name": "SafeRoute — Find help, know the steps",
+  "short_name": "SafeRoute",
+  "description": "Find your nearest A&E, get immediate first aid instructions, and safety guidance for walking, driving and public transport.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14171C",
+  "theme_color": "#14171C",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
