@@ -150,6 +150,105 @@
   buildAccordion("first-aid-accordion", FIRST_AID, { showCriticalTag: true });
   buildAccordion("walking-accordion", WALKING, {});
   buildAccordion("travel-accordion", TRAVEL, {});
+  buildAccordion("respond-accordion", RESPOND, { showCriticalTag: true });
+
+  /* ---------- Respond tab: exact location sharing ---------- */
+
+  const shareLocationBtn = document.getElementById("btn-share-location");
+  const respondStatus = document.getElementById("respond-locate-status");
+  const coordReadout = document.getElementById("coord-readout");
+  const coordValueEl = document.getElementById("coord-value");
+  const copyCoordsBtn = document.getElementById("btn-copy-coords");
+  const nativeShareBtn = document.getElementById("btn-share-native");
+  const w3wLink = document.getElementById("w3w-link");
+
+  let lastCoords = null;
+
+  if (shareLocationBtn) {
+    shareLocationBtn.addEventListener("click", () => {
+      if (!("geolocation" in navigator)) {
+        respondStatus.textContent = "Location isn't available on this device or browser.";
+        return;
+      }
+      respondStatus.textContent = "Finding your location…";
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          lastCoords = { lat, lng };
+
+          coordValueEl.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+          coordReadout.hidden = false;
+          respondStatus.textContent =
+            "Location found. These coordinates work with or without what3words — you can read them directly to a 999 operator.";
+
+          if (navigator.share) nativeShareBtn.hidden = false;
+
+          if (W3W_API_KEY) {
+            try {
+              const res = await fetch(
+                `https://api.what3words.com/v3/convert-to-3wa?coordinates=${lat},${lng}&key=${W3W_API_KEY}&format=json`
+              );
+              const json = await res.json();
+              if (json && json.words) {
+                w3wLink.textContent = `///${json.words} — open in what3words →`;
+                w3wLink.href = `https://what3words.com/${json.words}`;
+                w3wLink.hidden = false;
+              } else {
+                w3wLink.hidden = true;
+              }
+            } catch (e) {
+              // API call failed — coordinates above remain the reliable fallback.
+              w3wLink.hidden = true;
+            }
+          } else {
+            // No API key configured: hand off to what3words' own site to
+            // resolve the words. See the note in data.js about this link
+            // pattern not being independently verified.
+            w3wLink.textContent = "Open exact location in what3words →";
+            w3wLink.href = `https://what3words.com/${lat},${lng}`;
+            w3wLink.hidden = false;
+          }
+        },
+        (err) => {
+          respondStatus.textContent =
+            err.code === err.PERMISSION_DENIED
+              ? "Location permission denied — you can still describe landmarks to a 999 operator."
+              : "Couldn't get your location.";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  }
+
+  if (copyCoordsBtn) {
+    copyCoordsBtn.addEventListener("click", async () => {
+      if (!lastCoords) return;
+      const text = `${lastCoords.lat.toFixed(6)}, ${lastCoords.lng.toFixed(6)}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        respondStatus.textContent = "Coordinates copied.";
+      } catch (e) {
+        respondStatus.textContent = "Couldn't copy — the coordinates above are visible, read them out directly.";
+      }
+    });
+  }
+
+  if (nativeShareBtn) {
+    nativeShareBtn.addEventListener("click", () => {
+      if (!lastCoords || !navigator.share) return;
+      navigator
+        .share({
+          title: "My location",
+          text: `My location: ${lastCoords.lat.toFixed(6)}, ${lastCoords.lng.toFixed(6)}`,
+          url: `https://what3words.com/${lastCoords.lat},${lastCoords.lng}`,
+        })
+        .catch(() => {
+          // User cancelled the share sheet — not an error.
+        });
+    });
+  }
 
   /* ---------- Service worker (offline support) ---------- */
 

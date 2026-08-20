@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SafeRoute — Find help, know the steps</title>
-<meta name="description" content="Find your nearest A&E, get immediate first aid instructions, and safety guidance for walking, driving and public transport.">
+<meta name="description" content="Find your nearest A&E, get immediate first aid instructions, safety guidance for walking, driving and public transport, and location-sharing plus response guidance for in-the-moment situations.">
 <meta name="theme-color" content="#14171C">
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
@@ -81,6 +81,34 @@
       <div class="accordion" id="travel-accordion"></div>
     </section>
 
+    <!-- RESPOND -->
+    <section class="panel" id="panel-respond" data-panel hidden aria-labelledby="tab-respond">
+      <div class="panel__intro">
+        <h2>If something's happening now</h2>
+        <p class="panel__lede">Share your exact location, then find guidance for the situation below.</p>
+      </div>
+
+      <div class="notice notice--warn">
+        <p><strong>Verify before you rely on this.</strong> The terrorist incident guidance below mirrors the UK's national Run, Hide, Tell framework from Counter Terrorism Policing. It has not been checked against the current wording on <a href="https://www.protectuk.police.uk" target="_blank" rel="noopener">ProtectUK</a> or <a href="https://www.gov.uk" target="_blank" rel="noopener">gov.uk</a>. Always follow instructions from police or emergency services on the scene over anything written here.</p>
+      </div>
+
+      <div class="locate-block">
+        <button class="btn btn--primary" id="btn-share-location">Share my exact location</button>
+        <p class="field-status" id="respond-locate-status" aria-live="polite"></p>
+
+        <div class="coord-readout" id="coord-readout" hidden>
+          <p class="coord-readout__value" id="coord-value"></p>
+          <div class="btn-row">
+            <button class="btn btn--secondary" id="btn-copy-coords">Copy coordinates</button>
+            <button class="btn btn--secondary" id="btn-share-native" hidden>Share</button>
+          </div>
+          <a class="w3w-link" id="w3w-link" href="#" target="_blank" rel="noopener" hidden>Open exact location in what3words →</a>
+        </div>
+      </div>
+
+      <div class="accordion" id="respond-accordion"></div>
+    </section>
+
   </main>
 
   <nav class="tabbar" role="tablist" aria-label="Sections">
@@ -99,6 +127,10 @@
     <button class="tabbar__item" id="tab-travel" data-target="panel-travel" role="tab" aria-selected="false" aria-controls="panel-travel">
       <span class="tabbar__icon" aria-hidden="true">🚗</span>
       <span>On the Move</span>
+    </button>
+    <button class="tabbar__item" id="tab-respond" data-target="panel-respond" role="tab" aria-selected="false" aria-controls="panel-respond">
+      <span class="tabbar__icon" aria-hidden="true">⚠</span>
+      <span>Respond</span>
     </button>
   </nav>
 

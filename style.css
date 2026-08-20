@@ -253,6 +253,50 @@ main { padding: 4px 18px 40px; }
   border: 1px solid var(--ink-line);
 }
 
+/* ---------- Respond tab: location sharing ---------- */
+
+.locate-block { margin-bottom: 20px; }
+
+.coord-readout {
+  margin-top: 14px;
+  background: var(--ink-raised);
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.coord-readout__value {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  letter-spacing: 0.02em;
+}
+
+.btn-row { display: flex; gap: 10px; }
+
+.btn-row .btn {
+  width: auto;
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 13.5px;
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--paper);
+  border: 1px solid var(--ink-line);
+}
+
+.w3w-link {
+  display: block;
+  margin-top: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--caution);
+  text-decoration: none;
+}
+
 /* ---------- Accordion (first aid / awareness content) ---------- */
 
 .accordion { display: flex; flex-direction: column; gap: 8px; }

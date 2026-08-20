@@ -19,6 +19,25 @@ Same pattern as Close Protection Ops: vanilla JS, deployable straight to GitHub 
 - **On Foot** — pedestrian/lone-walking awareness, 3 modules.
 - **On the Move** — driving and public transport awareness, 5 modules,
   including the Silent Solution (999 + 55) and BTP 61016 text line.
+- **Respond** — exact location sharing (raw GPS coordinates, always
+  accurate, zero dependencies) plus what3words hand-off, and 4 threat
+  guidance modules: unwanted approaches, carjacking, terrorist incident
+  (Run, Hide, Tell), and reporting something suspicious.
+
+### what3words
+
+No API key is wired in by default. Without one, the app shows raw
+coordinates (reliable, works today) and links out to what3words.com to
+resolve the words — that deep-link URL pattern is commonly used but has
+**not been independently verified** against their current site behaviour.
+To get a guaranteed-accurate three-word result shown directly in the app:
+
+1. Register a free account at developer.what3words.com
+2. Check their current API terms and rate limits before relying on it for
+   anything beyond low-volume personal use
+3. Paste the key into `W3W_API_KEY` at the top of `data.js`
+4. Consider domain-restricting the key from their dashboard — it's visible
+   in the page source on a static site like this one
 
 ## What's deliberately NOT in this build
 
@@ -35,6 +54,10 @@ Same pattern as Close Protection Ops: vanilla JS, deployable straight to GitHub 
    Ambulance/British Red Cross content properly, or have it checked by
    someone clinically qualified. Right now it's "sounds right," not "signed
    off."
+2a. Verify the Run, Hide, Tell content in the Respond tab against the
+   current official wording at protectuk.police.uk before this goes
+   anywhere near the public. It's reproduced from memory of the published
+   framework, attributed, not pasted from a live source — check it.
 3. Solicitor review of the disclaimers in `index.html` (same gate you set
    for CP Ops — this app carries more public-facing liability, not less).
 4. Decide on professional indemnity insurance coverage for a consumer safety

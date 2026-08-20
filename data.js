@@ -1,4 +1,18 @@
 /* ==========================================================================
+   what3words config
+   Leave blank and the app falls back to raw GPS coordinates plus a deep
+   link to what3words.com to resolve the words. That deep link pattern
+   (what3words.com/<lat>,<lng>) is commonly used but hasn't been verified
+   against their current site behaviour — test it before relying on it.
+   For a guaranteed-accurate in-app result, register a free key at
+   developer.what3words.com and paste it here. Check their current rate
+   limits and consider domain-restricting the key from their dashboard,
+   since this is a static site and the key is visible in the page source.
+   ========================================================================== */
+
+const W3W_API_KEY = "";
+
+/* ==========================================================================
    SafeRoute — content data
    HOSPITALS: starter dataset only. ~28 major NHS A&E sites across England,
    Scotland and Wales, coordinates approximate. This is NOT sourced from
@@ -212,6 +226,61 @@ const TRAVEL = [
       "Stay alert to who boards and where they sit — trust discomfort even without a specific reason.",
       "If you feel unsafe or witness something concerning on a train, text the British Transport Police on 61016. It's discreet and doesn't require a phone call.",
       "For an emergency on a train or at a station, call 999 — you can also use the emergency alarm/intercom on board."
+    ]
+  }
+];
+
+/* ==========================================================================
+   RESPOND — location sharing + in-the-moment threat guidance.
+   Terrorist incident content mirrors the UK's national Run, Hide, Tell
+   framework from Counter Terrorism Policing — attributed, and flagged
+   for verification against the current official wording before launch.
+   ========================================================================== */
+
+const RESPOND = [
+  {
+    title: "Unwanted approaches or conversations",
+    critical: false,
+    steps: [
+      "Trust the instinct before you've worked out why. You don't need a reason to end a conversation or walk away.",
+      "Keep distance — don't let someone close the space between you, especially somewhere you can't see a clear exit.",
+      "Keep responses short, flat and unemotional. Long explanations or arguing tends to extend the interaction, not end it.",
+      "Move toward other people, staff, or a well-lit doorway rather than standing your ground to argue it out.",
+      "If they follow you, head somewhere staffed — a shop, station or venue — and say clearly to a staff member: 'this person is following me.' Being visible ends most of these situations on its own.",
+      "If it escalates or you feel physically unsafe, call <a href=\"tel:999\">999</a>. If you can't speak safely, dial 999 then press 55 when prompted — the Silent Solution alerts police without you needing to talk."
+    ]
+  },
+  {
+    title: "Carjacking",
+    critical: true,
+    steps: [
+      "Give up the car if someone demands it. No vehicle is worth a confrontation — your safety comes first, every time.",
+      "Move away from the vehicle and the immediate area as soon as it's safe to. Don't stay close by, and don't chase or follow the vehicle once it's taken.",
+      "If you're forced into a car by a stranger, look for the first genuinely safe opportunity to get out and get away — don't hold out for a better one if a decent chance is right in front of you.",
+      "Call <a href=\"tel:999\">999</a> as soon as you're safe. Give direction of travel, number of people involved, and any description you can — don't delay the call to gather more detail first.",
+      "Watch for set-ups before it happens: a staged minor collision, someone flagging you down on an isolated road, being boxed in while parking. If a stop feels engineered, don't get out — drive on to a police station or busy, well-lit location instead."
+    ]
+  },
+  {
+    title: "Terrorist incident — Run, Hide, Tell",
+    critical: true,
+    steps: [
+      "RUN — if there's a safe route away, take it. Leave belongings behind. Encourage others to come with you, but don't delay your own escape to convince them.",
+      "HIDE — if you can't run, find cover that blocks sight of you and, ideally, is solid enough to stop gunfire. Lock or barricade doors where you can, move away from doors and windows, and put your phone on silent — not off.",
+      "TELL — call <a href=\"tel:999\">999</a> as soon as it's safe to. Give your location, the direction of travel of the threat, number of attackers if known, and weapon type if you saw one. Don't hang up if you're told to stay on the line.",
+      "If armed police reach you: keep your hands visible and empty, move slowly, avoid sudden movements, and follow instructions immediately even if they seem abrupt — they're moving fast because the threat may still be active."
+    ],
+    note: "Mirrors the UK's national Run, Hide, Tell counter-terrorism guidance from Counter Terrorism Policing. Verify current wording at protectuk.police.uk before relying on this in a live situation."
+  },
+  {
+    title: "Reporting something suspicious",
+    critical: false,
+    steps: [
+      "Trust your instinct. You don't need to be certain something's wrong to report it — that's the job of the people you report it to, not yours.",
+      "For an emergency in progress, or immediate danger to life, call <a href=\"tel:999\">999</a>.",
+      "For something suspicious that isn't an emergency, call the confidential Anti-Terrorist Hotline on <a href=\"tel:0800789321\">0800 789 321</a>.",
+      "On a train or at a station, text British Transport Police on <a href=\"sms:61016\">61016</a> rather than calling — see the On the Move tab for more on this.",
+      "Report specific behaviour, not appearance. Unusual interest in security measures or entry points, an item left unattended and unclaimed, or behaviour inconsistent with someone's stated situation are worth reporting. A person's appearance, ethnicity or religion is never a valid basis on its own — reporting based on that wastes time that should go to real leads."
     ]
   }
 ];
