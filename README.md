@@ -10,12 +10,13 @@ Same pattern as Close Protection Ops: vanilla JS, deployable straight to GitHub 
   against the NHS Organisation Data Service**. It is flagged as such directly
   in the app UI. Do not represent this as authoritative before it's replaced
   with a real, refreshable NHS data source.
-- **First aid** — 7 modules (choking, CPR, severe bleeding, burns, seizure,
-  anaphylaxis, unresponsive/recovery position). Written fresh for this app,
-  not copied from St John Ambulance / British Red Cross material — so there's
-  no licensing dependency blocking you shipping this, but it also means it
-  has **not been clinically reviewed**. Treat this as a placeholder for
-  properly sourced/licensed content, not a finished deliverable.
+- **First aid** — 9 modules (choking, CPR, severe bleeding, stabbing, gunshot
+  wound, burns, seizure, anaphylaxis, unresponsive/recovery position).
+  Written for this app, structurally checked against British Red Cross,
+  citizenAID and accredited UK first-aid provider guidance rather than
+  written from memory alone — but still **not clinically reviewed or
+  licensed**. Treat this as a well-sourced placeholder, not a finished
+  deliverable.
 - **On Foot** — pedestrian/lone-walking awareness, 3 modules.
 - **On the Move** — driving and public transport awareness, 5 modules,
   including the Silent Solution (999 + 55) and BTP 61016 text line.

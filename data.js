@@ -99,6 +99,36 @@ const FIRST_AID = [
     ]
   },
   {
+    title: "Stabbing",
+    critical: true,
+    steps: [
+      "Check the scene is safe before you approach — is whoever did this still nearby? If there's any doubt, stay back and call 999 rather than becoming a second casualty. If this is part of an ongoing attack, see the Respond tab's Run, Hide, Tell guidance first.",
+      "Call 999 and say it's a stabbing.",
+      "Protect yourself — gloves if you have them, or any barrier between you and the blood.",
+      "If a knife or other object is still in the wound, leave it exactly where it is. Do not remove it — it may be slowing the bleeding. Apply firm pressure either side of it instead.",
+      "If there's no object in the wound, apply firm, direct pressure using a clean cloth or dressing, or your bare hands if nothing else is available.",
+      "Help them lie down. Once bleeding is under control, raising their legs — not the wound itself — can help if they're going into shock. Skip this if you suspect a spinal injury or the wound is in the torso.",
+      "Keep them warm, keep talking to them, and keep pressure on continuously until paramedics take over. Direct pressure alone controls most bleeding.",
+      "Watch for shock — pale, cold, clammy skin, rapid breathing, confusion, weakness. Expect them to deteriorate and be ready to start CPR if they stop responding normally."
+    ],
+    note: "This is also a crime scene. Preserve anything you're not directly using to save a life, and don't move the person more than you need to. Life-saving care always comes first regardless."
+  },
+  {
+    title: "Gunshot wound",
+    critical: true,
+    steps: [
+      "Scene safety is the absolute first priority. Is whoever did this still nearby or still a threat? If there's any doubt at all, do not approach — stay in cover and call 999. If this is part of an ongoing attack, see the Respond tab's Run, Hide, Tell guidance first.",
+      "Once it's genuinely safe to approach, call 999 and say it's a gunshot wound. Shout for help and ask anyone nearby to find a first aid or bleed control kit if one's available.",
+      "Check for more than one wound — a bullet can have both an entry and an exit point, and the exit wound is often larger and easy to miss.",
+      "Apply firm, direct pressure to the wound with a trauma dressing, clean cloth, or your hands.",
+      "If the wound is deep or the opening is large, pack it — press dressing or clean cloth firmly into the wound itself, not just over the top, then maintain pressure on top of that.",
+      "Loosen tight clothing and cover them to keep them warm. Raise their legs to help with shock, unless you suspect a spinal injury or the wound is in the torso.",
+      "Keep reassuring them and keep them talking — a change in how they're responding is often the earliest sign of deterioration.",
+      "Be ready to start CPR if they stop breathing normally or become unresponsive."
+    ],
+    note: "Do not approach, move, or attempt to secure any weapon at the scene — that's what armed police are for. Your only job is staying safe yourself and keeping pressure on the wound."
+  },
+  {
     title: "Burns and scalds",
     critical: false,
     steps: [
