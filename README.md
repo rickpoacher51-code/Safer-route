@@ -65,12 +65,15 @@ To get a guaranteed-accurate three-word result shown directly in the app:
    current official wording at protectuk.police.uk before this goes
    anywhere near the public. It's reproduced from memory of the published
    framework, attributed, not pasted from a live source — check it.
-2b. **Lock the Prepare tab before anyone else uses this.** Recce notes, RV
-   points and duress words are stored in plaintext `localStorage` — no
-   encryption, no PIN. Anyone who can unlock the phone can read them,
-   which defeats the point of a duress word entirely. Reuse the CP Ops PIN
-   pattern (salted SHA-256, Web Crypto API) scoped to just this tab before
-   this goes to anyone but you.
+2b. **Duress words are now PIN-encrypted** (AES-GCM, PBKDF2-derived key,
+   100,000 iterations) — closed, for that one field. Recce notes and the
+   rest of the RV plan (name, members, RV points, contact) are still
+   plaintext in `localStorage`, unencrypted, no PIN. Decide if that's
+   acceptable before this goes to anyone but you — a PIN on just the
+   duress word protects the one thing whose entire value depends on
+   secrecy, but doesn't protect where you're planning to be or who you're
+   meeting. If that needs covering too, that's the CP Ops-style full-tab
+   lock, not this.
 3. Solicitor review of the disclaimers in `index.html` (same gate you set
    for CP Ops — this app carries more public-facing liability, not less).
 4. Decide on professional indemnity insurance coverage for a consumer safety

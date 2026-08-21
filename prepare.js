@@ -107,9 +107,231 @@
 
   /* ==========================================================================
      RV point & duress word
+     ---
+     Every field here saves in plaintext, same as before — except the duress
+     word, which is encrypted with a key derived from a PIN via PBKDF2
+     (100,000 iterations, SHA-256) and stored as AES-GCM ciphertext, not as
+     plain text. Nothing is stored that lets the PIN itself be recovered:
+     the "check" value below exists only to detect a wrong PIN, using
+     AES-GCM's own authentication tag rather than a separate weaker hash.
+     Requires a secure context (HTTPS or localhost) for crypto.subtle —
+     GitHub Pages serves HTTPS, so this is fine once deployed.
      ========================================================================== */
 
   const RV_KEY = "saferoute_rv_plans";
+  const PIN_META_KEY = "saferoute_duress_pin_meta";
+  const PIN_CHECK_PHRASE = "saferoute-duress-check-v1";
+  const PBKDF2_ITERATIONS = 100000;
+
+  let cachedKey = null; // memory-only for this tab session, never persisted
+
+  function cryptoAvailable() {
+    return !!(window.crypto && window.crypto.subtle);
+  }
+
+  function bufToB64(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf)));
+  }
+
+  function b64ToBuf(b64) {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes.buffer;
+  }
+
+  async function deriveKey(pin, saltB64) {
+    const salt = new Uint8Array(b64ToBuf(saltB64));
+    const enc = new TextEncoder();
+    const baseKey = await crypto.subtle.importKey(
+      "raw",
+      enc.encode(pin),
+      "PBKDF2",
+      false,
+      ["deriveKey"]
+    );
+    return crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt, iterations: PBKDF2_ITERATIONS, hash: "SHA-256" },
+      baseKey,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  function hasPinConfigured() {
+    return !!localStorage.getItem(PIN_META_KEY);
+  }
+
+  async function setupPin(pin) {
+    const saltBuf = crypto.getRandomValues(new Uint8Array(16));
+    const saltB64 = bufToB64(saltBuf.buffer);
+    const key = await deriveKey(pin, saltB64);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const enc = new TextEncoder();
+    const ct = await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv },
+      key,
+      enc.encode(PIN_CHECK_PHRASE)
+    );
+    localStorage.setItem(
+      PIN_META_KEY,
+      JSON.stringify({ salt: saltB64, checkIv: bufToB64(iv.buffer), checkCt: bufToB64(ct) })
+    );
+    cachedKey = key;
+    return key;
+  }
+
+  async function verifyPin(pin) {
+    const metaRaw = localStorage.getItem(PIN_META_KEY);
+    if (!metaRaw) return null;
+    const meta = JSON.parse(metaRaw);
+    try {
+      const key = await deriveKey(pin, meta.salt);
+      const iv = new Uint8Array(b64ToBuf(meta.checkIv));
+      const ptBuf = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv },
+        key,
+        b64ToBuf(meta.checkCt)
+      );
+      // AES-GCM's auth tag already rejects a wrong key by throwing before
+      // we get here — this string check is just belt-and-braces.
+      if (new TextDecoder().decode(ptBuf) === PIN_CHECK_PHRASE) {
+        cachedKey = key;
+        return key;
+      }
+      return null;
+    } catch (e) {
+      return null; // wrong PIN — GCM authentication failed
+    }
+  }
+
+  function resetPin() {
+    localStorage.removeItem(PIN_META_KEY);
+    cachedKey = null;
+    // Strip encrypted duress words — they're unrecoverable without the old
+    // PIN by design. Everything else in each saved plan is kept.
+    const list = loadList(RV_KEY);
+    list.forEach((r) => {
+      delete r.duressEnc;
+    });
+    saveList(RV_KEY, list);
+  }
+
+  async function encryptDuress(key, plaintext) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const enc = new TextEncoder();
+    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, enc.encode(plaintext));
+    return { iv: bufToB64(iv.buffer), ct: bufToB64(ct) };
+  }
+
+  async function decryptDuress(key, encObj) {
+    const iv = new Uint8Array(b64ToBuf(encObj.iv));
+    const ptBuf = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv },
+      key,
+      b64ToBuf(encObj.ct)
+    );
+    return new TextDecoder().decode(ptBuf);
+  }
+
+  // Minimal PIN modal. Returns a Promise<string|null> — the entered PIN,
+  // or null if cancelled. mode "setup" asks twice and must match; mode
+  // "verify" asks once and offers a reset link.
+  function showPinModal({ title, message, mode }) {
+    return new Promise((resolve) => {
+      const overlay = document.createElement("div");
+      overlay.className = "pin-modal-overlay";
+      overlay.innerHTML = `
+        <div class="pin-modal" role="dialog" aria-modal="true">
+          <h3 class="pin-modal__title">${escapeHtml(title)}</h3>
+          <p class="pin-modal__message">${escapeHtml(message)}</p>
+          <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" class="pin-modal__input" id="pin-input-1" placeholder="6-digit PIN" autocomplete="off">
+          ${
+            mode === "setup"
+              ? `<input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" class="pin-modal__input" id="pin-input-2" placeholder="Confirm PIN" autocomplete="off">`
+              : ""
+          }
+          <p class="pin-modal__error" id="pin-modal-error" hidden></p>
+          <div class="btn-row">
+            <button class="btn btn--secondary" id="pin-modal-cancel" type="button">Cancel</button>
+            <button class="btn btn--primary" id="pin-modal-ok" type="button">${
+              mode === "setup" ? "Set PIN" : "Unlock"
+            }</button>
+          </div>
+          ${
+            mode === "verify"
+              ? `<button class="pin-modal__forgot" id="pin-modal-forgot" type="button">Forgot PIN? Reset (deletes saved duress words)</button>`
+              : ""
+          }
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      document.getElementById("pin-input-1").focus();
+
+      const cleanup = (result) => {
+        overlay.remove();
+        resolve(result);
+      };
+
+      document.getElementById("pin-modal-cancel").addEventListener("click", () => cleanup(null));
+
+      document.getElementById("pin-modal-ok").addEventListener("click", () => {
+        const v1 = document.getElementById("pin-input-1").value.trim();
+        const errEl = document.getElementById("pin-modal-error");
+        if (!/^\d{4,6}$/.test(v1)) {
+          errEl.textContent = "Enter a 4–6 digit PIN.";
+          errEl.hidden = false;
+          return;
+        }
+        if (mode === "setup") {
+          const v2 = document.getElementById("pin-input-2").value.trim();
+          if (v1 !== v2) {
+            errEl.textContent = "PINs don't match.";
+            errEl.hidden = false;
+            return;
+          }
+        }
+        cleanup(v1);
+      });
+
+      if (mode === "verify") {
+        document.getElementById("pin-modal-forgot").addEventListener("click", () => {
+          if (
+            confirm(
+              "Reset PIN? This permanently deletes any saved duress words — the rest of each plan is kept. This can't be undone."
+            )
+          ) {
+            resetPin();
+            cleanup(null);
+            renderRvList();
+          }
+        });
+      }
+    });
+  }
+
+  // Gets a usable key for encrypt/decrypt: cached in memory if already
+  // unlocked this session, otherwise prompts setup (no PIN exists yet) or
+  // verify (PIN exists) via the modal. Returns null if the user cancels or
+  // enters the wrong PIN.
+  async function getKeyForDuress(promptTitle, promptMessage) {
+    if (cachedKey) return cachedKey;
+    if (!hasPinConfigured()) {
+      const pin = await showPinModal({
+        title: "Protect your duress word",
+        message: "This word is only useful if it stays secret. Set a PIN — you'll need it again to view saved duress words on this device.",
+        mode: "setup",
+      });
+      if (!pin) return null;
+      return setupPin(pin);
+    }
+    const pin = await showPinModal({ title: promptTitle, message: promptMessage, mode: "verify" });
+    if (!pin) return null;
+    const key = await verifyPin(pin);
+    if (!key) alert("Incorrect PIN.");
+    return key;
+  }
 
   function renderRvList() {
     const el = document.getElementById("rv-list");
@@ -125,6 +347,12 @@
       .map((r) => {
         const row = (label, val) =>
           val ? `<p><strong>${label}:</strong> ${escapeHtml(val)}</p>` : "";
+        const duressRow = r.duressEnc
+          ? `<p><strong>Duress word:</strong>
+               <button class="reveal-btn" data-reveal-id="${r.id}" type="button">•••• Reveal</button>
+               <span class="reveal-value" id="reveal-value-${r.id}" hidden></span>
+             </p>`
+          : "";
         return `
           <li class="saved-card">
             <div class="saved-card__top">
@@ -135,27 +363,80 @@
             ${row("Primary RV", r.primary)}
             ${row("Fallback RV", r.fallback)}
             ${row("Out-of-area contact", r.contact)}
-            ${row("Duress word", r.duress)}
+            ${duressRow}
           </li>
         `;
       })
       .join("");
   }
 
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest(".reveal-btn");
+    if (!btn) return;
+    const id = btn.dataset.revealId;
+    const list = loadList(RV_KEY);
+    const record = list.find((r) => r.id === id);
+    if (!record || !record.duressEnc) return;
+
+    const key = await getKeyForDuress(
+      "Enter PIN",
+      "Enter your PIN to reveal this duress word."
+    );
+    if (!key) return;
+
+    try {
+      const plain = await decryptDuress(key, record.duressEnc);
+      const valEl = document.getElementById(`reveal-value-${id}`);
+      valEl.textContent = plain;
+      valEl.hidden = false;
+      btn.hidden = true;
+      setTimeout(() => {
+        valEl.hidden = true;
+        btn.hidden = false;
+      }, 20000);
+    } catch (err) {
+      alert("Couldn't decrypt this — the PIN may not match what this word was saved with.");
+    }
+  });
+
   const rvForm = document.getElementById("rv-form");
+  const rvStatus = document.getElementById("rv-status");
+
   if (rvForm) {
-    rvForm.addEventListener("submit", (e) => {
+    rvForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const list = loadList(RV_KEY);
-      list.push({
+      const duressPlain = document.getElementById("rv-duress").value.trim();
+
+      const record = {
         id: Date.now().toString(36),
         name: document.getElementById("rv-name").value.trim(),
         members: document.getElementById("rv-members").value.trim(),
         primary: document.getElementById("rv-primary").value.trim(),
         fallback: document.getElementById("rv-fallback").value.trim(),
         contact: document.getElementById("rv-contact").value.trim(),
-        duress: document.getElementById("rv-duress").value.trim(),
-      });
+      };
+
+      if (duressPlain) {
+        if (!cryptoAvailable()) {
+          if (rvStatus) rvStatus.textContent = "This browser can't encrypt — plan saved without the duress word.";
+        } else {
+          const key = await getKeyForDuress(
+            "Enter PIN",
+            "Enter your PIN to save this duress word."
+          );
+          if (key) {
+            record.duressEnc = await encryptDuress(key, duressPlain);
+            if (rvStatus) rvStatus.textContent = "Plan saved. Duress word encrypted.";
+          } else if (rvStatus) {
+            rvStatus.textContent = "Plan saved without the duress word — PIN was cancelled or incorrect.";
+          }
+        }
+      } else if (rvStatus) {
+        rvStatus.textContent = "";
+      }
+
+      const list = loadList(RV_KEY);
+      list.push(record);
       saveList(RV_KEY, list);
       rvForm.reset();
       renderRvList();
