@@ -314,3 +314,56 @@ const RESPOND = [
     ]
   }
 ];
+
+/* ==========================================================================
+   PREPARE — Baseline awareness prompts. The point isn't a static checklist,
+   it's actively noticing what "normal" looks like in a given setting so the
+   abnormal stands out. These are prompts the user answers, not facts to read.
+   ========================================================================== */
+
+const BASELINE_ENVIRONMENTS = [
+  {
+    key: "commuting",
+    label: "Commuting / station",
+    prompts: [
+      "What's the normal pace and noise level here right now?",
+      "Where are the staffed points and exits from where you're stood?",
+      "Is anyone dressed or behaving in a way that's inconsistent with everyone else around them?",
+      "Is anyone paying more attention to you, an exit, or a specific person than to their own journey?",
+      "If you had to leave quickly, which way would you go?",
+    ],
+  },
+  {
+    key: "venue",
+    label: "Public venue / event",
+    prompts: [
+      "Where are the exits, and which one is nearest to where you'll actually be?",
+      "What does 'normal' crowd behaviour look like here — and who doesn't match it?",
+      "Where's the nearest staffed or first-aid point?",
+      "Is anyone showing unusual interest in security measures, bags, or entry points?",
+      "If something happened right now, where's the first place you'd move to?",
+    ],
+  },
+  {
+    key: "walking",
+    label: "Walking a route",
+    prompts: [
+      "What's the normal amount of activity on this street at this time?",
+      "Who's around you, and has anyone been in view for longer than a normal journey would explain?",
+      "Where's the nearest well-lit, populated place from where you are right now?",
+      "Does anything about your surroundings feel different to what you expected before you set off?",
+      "If you needed to change direction right now, where would you go?",
+    ],
+  },
+  {
+    key: "driving",
+    label: "Driving",
+    prompts: [
+      "Is any vehicle behind you still there after two or three unrelated turns?",
+      "What's normal traffic and parking behaviour on this road — and does anything not fit it?",
+      "Where's the nearest well-lit, populated place you could pull into?",
+      "Has anyone approached the car who wasn't there when you parked or stopped?",
+      "If you needed to leave the area right now, what's your route out?",
+    ],
+  },
+];

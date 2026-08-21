@@ -24,6 +24,12 @@ Same pattern as Close Protection Ops: vanilla JS, deployable straight to GitHub 
   accurate, zero dependencies) plus what3words hand-off, and 4 threat
   guidance modules: unwanted approaches, carjacking, terrorist incident
   (Run, Hide, Tell), and reporting something suspicious.
+- **Prepare** — three planning tools, the actual differentiator: route/venue
+  recce checklist (entry/exit points, choke points, nearest help, RV if
+  separated), a family/group RV point and duress word planner, and a
+  guided "baseline awareness" tool (pick a setting, actively answer
+  prompts about what's normal there, rather than read static bullets).
+  All three persist locally via `localStorage` and are editable/deletable.
 
 ### what3words
 
@@ -59,6 +65,12 @@ To get a guaranteed-accurate three-word result shown directly in the app:
    current official wording at protectuk.police.uk before this goes
    anywhere near the public. It's reproduced from memory of the published
    framework, attributed, not pasted from a live source — check it.
+2b. **Lock the Prepare tab before anyone else uses this.** Recce notes, RV
+   points and duress words are stored in plaintext `localStorage` — no
+   encryption, no PIN. Anyone who can unlock the phone can read them,
+   which defeats the point of a duress word entirely. Reuse the CP Ops PIN
+   pattern (salted SHA-256, Web Crypto API) scoped to just this tab before
+   this goes to anyone but you.
 3. Solicitor review of the disclaimers in `index.html` (same gate you set
    for CP Ops — this app carries more public-facing liability, not less).
 4. Decide on professional indemnity insurance coverage for a consumer safety

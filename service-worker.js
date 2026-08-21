@@ -1,10 +1,11 @@
-const CACHE_NAME = "saferoute-v3";
+const CACHE_NAME = "saferoute-v4";
 const ASSETS = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./data.js",
+  "./prepare.js",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",

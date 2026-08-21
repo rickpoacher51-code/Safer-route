@@ -109,6 +109,87 @@
       <div class="accordion" id="respond-accordion"></div>
     </section>
 
+    <!-- PREPARE -->
+    <section class="panel" id="panel-prepare" data-panel hidden aria-labelledby="tab-prepare">
+      <div class="panel__intro">
+        <h2>Prepare</h2>
+        <p class="panel__lede">Plan before you go, not after something happens.</p>
+      </div>
+
+      <div class="notice notice--warn">
+        <p><strong>Saved on this device only, and not yet locked.</strong> Recce notes, RV points, and duress words below are stored in this browser's local storage — nothing is sent anywhere, but nothing is encrypted or PIN-protected yet either. If someone else can unlock this phone, they can read this. Treat it accordingly until a lock is added.</p>
+      </div>
+
+      <div class="tool-block">
+        <h3 class="tool-block__title">Route &amp; venue recce</h3>
+        <p class="tool-block__lede">Plan it the way you'd plan an advance — know your way in, your way out, and where help is before you need it.</p>
+        <form id="recce-form" class="tool-form">
+          <label>Venue / destination
+            <input type="text" id="recce-venue" required>
+          </label>
+          <label>Date / time
+            <input type="text" id="recce-when" placeholder="e.g. Sat 14:00">
+          </label>
+          <label>Entry point(s)
+            <textarea id="recce-entry" rows="2"></textarea>
+          </label>
+          <label>Exit point(s) — including an alternate
+            <textarea id="recce-exit" rows="2"></textarea>
+          </label>
+          <label>Choke points / bottlenecks to be aware of
+            <textarea id="recce-chokepoints" rows="2"></textarea>
+          </label>
+          <label>Nearest help (A&amp;E, staffed venue, police point)
+            <textarea id="recce-help" rows="2"></textarea>
+          </label>
+          <label>If we're separated, meet at
+            <input type="text" id="recce-rv">
+          </label>
+          <label>Notes
+            <textarea id="recce-notes" rows="2"></textarea>
+          </label>
+          <button type="submit" class="btn btn--primary">Save recce</button>
+        </form>
+        <ul class="saved-list" id="recce-list"></ul>
+      </div>
+
+      <div class="tool-block">
+        <h3 class="tool-block__title">RV point &amp; duress word</h3>
+        <p class="tool-block__lede">Agree this in advance, as a group — never improvise it in the moment.</p>
+        <form id="rv-form" class="tool-form">
+          <label>Plan name
+            <input type="text" id="rv-name" placeholder="e.g. Family — night out" required>
+          </label>
+          <label>Who's covered by this plan
+            <input type="text" id="rv-members" placeholder="e.g. Rick, Sarah, kids">
+          </label>
+          <label>Primary rally point
+            <input type="text" id="rv-primary">
+          </label>
+          <label>Fallback rally point
+            <input type="text" id="rv-fallback">
+          </label>
+          <label>Out-of-area contact (name + number)
+            <input type="text" id="rv-contact">
+          </label>
+          <label>Duress word
+            <input type="text" id="rv-duress">
+            <span class="field-hint">A word that sounds normal in conversation or a text but means "I'm not okay." Agree what it means in advance, and never use it casually — or it loses meaning the one time it matters.</span>
+          </label>
+          <button type="submit" class="btn btn--primary">Save plan</button>
+        </form>
+        <ul class="saved-list" id="rv-list"></ul>
+      </div>
+
+      <div class="tool-block">
+        <h3 class="tool-block__title">Baseline awareness</h3>
+        <p class="tool-block__lede">The skill isn't a checklist — it's knowing what "normal" looks like here, so the abnormal stands out. Pick a setting and actually run through it.</p>
+        <div class="baseline-picker" id="baseline-picker"></div>
+        <div class="baseline-run" id="baseline-run" hidden></div>
+      </div>
+
+    </section>
+
   </main>
 
   <nav class="tabbar" role="tablist" aria-label="Sections">
@@ -132,9 +213,14 @@
       <span class="tabbar__icon" aria-hidden="true">⚠</span>
       <span>Respond</span>
     </button>
+    <button class="tabbar__item" id="tab-prepare" data-target="panel-prepare" role="tab" aria-selected="false" aria-controls="panel-prepare">
+      <span class="tabbar__icon" aria-hidden="true">🧭</span>
+      <span>Prepare</span>
+    </button>
   </nav>
 
   <script src="data.js"></script>
+  <script src="prepare.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
