@@ -7,6 +7,7 @@
 <meta name="description" content="Find your nearest A&E, get immediate first aid instructions, safety guidance for walking, driving and public transport, and location-sharing plus response guidance for in-the-moment situations.">
 <meta name="theme-color" content="#14171C">
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -45,6 +46,8 @@
 
       <button class="btn btn--primary" id="btn-locate">Use my location</button>
       <p class="field-status" id="locate-status" aria-live="polite"></p>
+
+      <div id="ae-map" class="map-box"></div>
 
       <ul class="hospital-list" id="hospital-list"></ul>
     </section>
@@ -105,6 +108,8 @@
           <a class="w3w-link" id="w3w-link" href="#" target="_blank" rel="noopener" hidden>Open exact location in what3words →</a>
         </div>
       </div>
+
+      <div id="respond-map" class="map-box"></div>
 
       <div class="accordion" id="respond-accordion"></div>
     </section>
@@ -220,8 +225,10 @@
     </button>
   </nav>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin=""></script>
   <script src="data.js"></script>
   <script src="prepare.js"></script>
+  <script src="map.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

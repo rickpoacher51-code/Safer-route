@@ -26,10 +26,47 @@ Same pattern as Close Protection Ops: vanilla JS, deployable straight to GitHub 
   (Run, Hide, Tell), and reporting something suspicious.
 - **Prepare** — three planning tools, the actual differentiator: route/venue
   recce checklist (entry/exit points, choke points, nearest help, RV if
-  separated), a family/group RV point and duress word planner, and a
-  guided "baseline awareness" tool (pick a setting, actively answer
-  prompts about what's normal there, rather than read static bullets).
-  All three persist locally via `localStorage` and are editable/deletable.
+  separated), a family/group RV point and duress word planner (duress word
+  is PIN-encrypted, AES-GCM via PBKDF2 — see below), and a guided "baseline
+  awareness" tool (pick a setting, actively answer prompts about what's
+  normal there, rather than read static bullets). All three persist locally
+  via `localStorage` and are editable/deletable.
+- **Live position map ("my location")** — a continuously-updating blue dot
+  (Leaflet + OpenStreetMap tiles, `navigator.geolocation.watchPosition`),
+  shown on the A&E tab alongside hospital markers and on the Respond tab to
+  visually confirm your position before sharing it. **This is the one part
+  of the app that needs an internet connection** — map tiles are images,
+  there's no meaningful way to cache a useful area offline in a static PWA.
+  Everything else degrades gracefully without it; the map itself shows a
+  plain text fallback message instead of crashing if Leaflet or the tiles
+  fail to load.
+- **Live NHS status check** — a "Check live NHS status" button per hospital
+  card, on-demand only (not automatic), queries the NHS Organisation Data
+  Service by name and shows current postcode, active/closed status, and
+  when NHS last updated the record. See the caveat below before treating
+  this as a permanent feature.
+
+### NHS Organisation Data Service (ORD API)
+
+Free, no key required, confirmed working via direct browser `fetch()` with
+no CORS block. Used only for the on-demand "Check live NHS status" button —
+not for expanding the hospital list's geographic coverage, and not
+automatically on page load (rate limit is 5 requests/second and NHS Digital
+describe it as "not designed for high volume usage").
+
+**Two real limits, not hypothetical ones:**
+1. NHS Digital's own documentation for this API says it's **"under review
+   for deprecation."** It's the best free option available today, not a
+   guaranteed-permanent one. If it stops responding, the "Check live NHS
+   status" button should fail gracefully to its error message — verify that
+   still happens if/when NHS actually retires this.
+2. There is **no clean "has an A&E department" filter** in this API — role
+   codes classify organisation type (trust, trust site, GP practice,
+   pathology lab), not service type. This is why the hospital *list* is
+   still the same ~28 hand-picked entries from the original starter
+   dataset, not a live search across all of England — a true "find A&E
+   near me nationwide" would need a second data source this project
+   doesn't currently have access to.
 
 ### what3words
 

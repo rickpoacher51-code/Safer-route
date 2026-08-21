@@ -253,6 +253,70 @@ main { padding: 4px 18px 40px; }
   border: 1px solid var(--ink-line);
 }
 
+.verify-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--ink-line);
+  color: var(--paper-dim);
+  border-radius: 7px;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.verify-btn:disabled { opacity: 0.6; cursor: default; }
+
+.verify-result {
+  font-size: 12.5px;
+  color: var(--paper-dim);
+  margin: 8px 0 0;
+  line-height: 1.4;
+}
+
+/* ---------- Live position map ("my location") ---------- */
+
+.map-box {
+  height: 260px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--ink-line);
+  margin-bottom: 16px;
+  background: var(--ink-raised);
+}
+
+.map-fallback {
+  padding: 16px;
+  font-size: 13px;
+  color: var(--paper-dim);
+  line-height: 1.5;
+}
+
+.my-location-dot__core {
+  position: absolute;
+  top: 4px; left: 4px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #4A86E8;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+}
+
+.my-location-dot__pulse {
+  position: absolute;
+  top: -4px; left: -4px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(74, 134, 232, 0.25);
+  animation: my-location-pulse 2s ease-out infinite;
+}
+
+@keyframes my-location-pulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
 /* ---------- Respond tab: location sharing ---------- */
 
 .locate-block { margin-bottom: 20px; }

@@ -16,10 +16,33 @@
 
       tab.classList.add("is-active");
       tab.setAttribute("aria-selected", "true");
-      document.getElementById(tab.dataset.target).hidden = false;
+      const targetId = tab.dataset.target;
+      document.getElementById(targetId).hidden = false;
       window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+
+      // Lazy map init — Leaflet renders wrong inside a hidden container, so
+      // maps are only created the first time their tab is actually opened,
+      // then just resized on later visits.
+      if (window.SafeRouteMap) {
+        if (targetId === "panel-ae") {
+          window.SafeRouteMap.initMap("ae-map", HOSPITALS);
+          window.SafeRouteMap.startWatching(["ae-map", "respond-map"]);
+          window.SafeRouteMap.refreshMapSize("ae-map");
+        } else if (targetId === "panel-respond") {
+          window.SafeRouteMap.initMap("respond-map");
+          window.SafeRouteMap.startWatching(["ae-map", "respond-map"]);
+          window.SafeRouteMap.refreshMapSize("respond-map");
+        }
+      }
     });
   });
+
+  // A&E is the default-active tab on load, so it never gets a click event —
+  // init its map directly rather than only from the tab-switch handler.
+  if (window.SafeRouteMap) {
+    window.SafeRouteMap.initMap("ae-map", HOSPITALS);
+    window.SafeRouteMap.startWatching(["ae-map", "respond-map"]);
+  }
 
   /* ---------- Connectivity indicator ---------- */
 
@@ -53,6 +76,30 @@
   const locateStatus = document.getElementById("locate-status");
   const locateBtn = document.getElementById("btn-locate");
 
+  // NHS Organisation Data Service — open-access, no key, confirmed working
+  // via direct browser fetch (no CORS block) and confirmed to support a
+  // Name= search returning postcode/status/last-changed. NHS Digital's own
+  // docs flag this API as "under review for deprecation" — it's the best
+  // free option today, not a guaranteed-permanent one. Rate limit is 5
+  // req/sec and it's explicitly "not designed for high volume", which is
+  // why this is an on-demand per-card check, not an automatic bulk refresh
+  // of the whole list on every load.
+  async function checkOdsStatus(hospitalName) {
+    const url = `https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?Name=${encodeURIComponent(
+      hospitalName
+    )}&Status=Active`;
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error("ODS request failed");
+    const json = await res.json();
+    const orgs = (json && json.Organisations) || [];
+    if (!orgs.length) return null;
+    // Prefer the actual site record (RO198, "NHS TRUST SITE") over the
+    // parent trust's own legal-entity record if both come back — the site
+    // is the one with a postcode that actually matches a physical building.
+    const site = orgs.find((o) => o.PrimaryRoleId === "RO198") || orgs[0];
+    return site;
+  }
+
   function renderHospitals(list, userCoords) {
     hospitalListEl.innerHTML = "";
     list.forEach((h) => {
@@ -75,10 +122,36 @@
           <a href="${mapsUrl}" target="_blank" rel="noopener">Directions</a>
           <a class="secondary" href="tel:${h.phone}">Call</a>
         </div>
+        <button class="verify-btn" type="button" data-hospital="${h.name.replace(/"/g, "&quot;")}">Check live NHS status</button>
+        <p class="verify-result" hidden></p>
       `;
       hospitalListEl.appendChild(li);
     });
   }
+
+  hospitalListEl.addEventListener("click", async (e) => {
+    const btn = e.target.closest(".verify-btn");
+    if (!btn) return;
+    const resultEl = btn.nextElementSibling;
+    btn.disabled = true;
+    btn.textContent = "Checking…";
+    resultEl.hidden = false;
+    resultEl.textContent = "";
+
+    try {
+      const site = await checkOdsStatus(btn.dataset.hospital);
+      if (!site) {
+        resultEl.textContent = "Not found in the NHS register under this name — verify manually via nhs.uk/service-search.";
+      } else {
+        resultEl.innerHTML = `<strong>${site.Status}</strong> — postcode ${site.PostCode}, NHS record last updated ${site.LastChangeDate}.`;
+      }
+    } catch (err) {
+      resultEl.textContent = "Couldn't reach the live NHS register right now — try again, or use nhs.uk/service-search directly.";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Check live NHS status";
+    }
+  });
 
   // Initial render, unsorted, so the list isn't empty before location is granted.
   renderHospitals(HOSPITALS, null);
