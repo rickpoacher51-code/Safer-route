@@ -57,18 +57,30 @@
       return null;
     }
 
-    const entry = { map, dotMarker: null, accuracyCircle: null };
+    const entry = { map, dotMarker: null, accuracyCircle: null, hospitalMarkers: {} };
     activeMaps[containerId] = entry;
 
     if (hospitals && hospitals.length) {
       hospitals.forEach((h) => {
-        L.marker([h.lat, h.lng])
+        const marker = L.marker([h.lat, h.lng])
           .addTo(map)
           .bindPopup(`<strong>${h.name}</strong><br>${h.address}`);
+        entry.hospitalMarkers[h.name] = marker;
       });
     }
 
     return entry;
+  }
+
+  // Pans/zooms the map to a specific hospital's marker and opens its popup —
+  // used when the user taps "Show on map" on a hospital card in the list.
+  function focusHospital(containerId, hospitalName) {
+    const entry = activeMaps[containerId];
+    if (!entry || !entry.hospitalMarkers) return;
+    const marker = entry.hospitalMarkers[hospitalName];
+    if (!marker) return;
+    entry.map.setView(marker.getLatLng(), 15);
+    marker.openPopup();
   }
 
   // Call after a map's container becomes visible (e.g. its tab is opened) —
@@ -130,5 +142,5 @@
     }
   }
 
-  window.SafeRouteMap = { initMap, refreshMapSize, startWatching, stopWatching };
+  window.SafeRouteMap = { initMap, refreshMapSize, startWatching, stopWatching, focusHospital };
 })();

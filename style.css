@@ -253,6 +253,13 @@ main { padding: 4px 18px 40px; }
   border: 1px solid var(--ink-line);
 }
 
+.hospital-card__secondary-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.show-on-map-btn,
 .verify-btn {
   appearance: none;
   background: transparent;
@@ -262,7 +269,6 @@ main { padding: 4px 18px 40px; }
   padding: 6px 11px;
   font-size: 12px;
   font-weight: 700;
-  margin-top: 10px;
   cursor: pointer;
 }
 

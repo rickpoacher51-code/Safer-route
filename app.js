@@ -123,7 +123,10 @@
           <a href="${mapsUrl}" target="_blank" rel="noopener">Directions</a>
           <a class="secondary" href="tel:${h.phone}">Call</a>
         </div>
-        <button class="verify-btn" type="button" data-hospital="${h.name.replace(/"/g, "&quot;")}">Check live NHS status</button>
+        <div class="hospital-card__secondary-actions">
+          <button class="show-on-map-btn" type="button" data-hospital="${h.name.replace(/"/g, "&quot;")}">Show on map</button>
+          <button class="verify-btn" type="button" data-hospital="${h.name.replace(/"/g, "&quot;")}">Check live NHS status</button>
+        </div>
         <p class="verify-result" hidden></p>
       `;
       hospitalListEl.appendChild(li);
@@ -131,6 +134,14 @@
   }
 
   hospitalListEl.addEventListener("click", async (e) => {
+    const mapBtn = e.target.closest(".show-on-map-btn");
+    if (mapBtn) {
+      if (window.SafeRouteMap) window.SafeRouteMap.focusHospital("ae-map", mapBtn.dataset.hospital);
+      const mapEl = document.getElementById("ae-map");
+      if (mapEl) mapEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
     const btn = e.target.closest(".verify-btn");
     if (!btn) return;
     const resultEl = btn.nextElementSibling;
