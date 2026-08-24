@@ -69,7 +69,8 @@ const FIRST_AID = [
       "Alternate 5 back blows and 5 abdominal thrusts until the object clears, they can breathe, or they become unresponsive.",
       "Call 999 if the blockage doesn't clear quickly, or if you're at all unsure. If they become unresponsive, start CPR."
     ],
-    note: "Do not attempt abdominal thrusts on a pregnant woman or infant under 1 — use back blows and chest thrusts instead. Seek proper training for infant choking."
+    note: "Do not attempt abdominal thrusts on a pregnant woman or infant under 1 — use back blows and chest thrusts instead. Seek proper training for infant choking.",
+    sjaLink: "https://www.sja.org.uk/first-aid-advice/choking/"
   },
   {
     title: "CPR — adult, unresponsive and not breathing normally",
@@ -83,7 +84,8 @@ const FIRST_AID = [
       "Continue compressions until an ambulance arrives, an AED is ready to use, or the person starts breathing normally.",
       "If trained and willing, give 30 compressions followed by 2 rescue breaths, repeating in cycles. Compression-only CPR is still effective if you're not trained in rescue breaths — don't let uncertainty stop you from starting compressions."
     ],
-    note: "An AED will guide you through its own use with voice prompts. Use one as soon as it arrives — it will not shock someone who doesn't need it."
+    note: "An AED will guide you through its own use with voice prompts. Use one as soon as it arrives — it will not shock someone who doesn't need it.",
+    sjaLink: "https://www.sja.org.uk/get-advice/basic-life-support/"
   },
   {
     title: "Severe bleeding",
@@ -96,7 +98,8 @@ const FIRST_AID = [
       "If bleeding soaks through the dressing, add more on top rather than removing the first layer.",
       "If you have a tourniquet and are trained to use one, and bleeding from a limb cannot be controlled by pressure, apply it above the wound and note the time applied.",
       "Keep the person warm and still, and monitor them for signs of shock — pale, cold, clammy skin, rapid breathing, confusion."
-    ]
+    ],
+    sjaLink: "https://www.sja.org.uk/get-advice/first-aid-advice/bleeding/severe-bleeding/"
   },
   {
     title: "Stabbing",
@@ -111,7 +114,8 @@ const FIRST_AID = [
       "Keep them warm, keep talking to them, and keep pressure on continuously until paramedics take over. Direct pressure alone controls most bleeding.",
       "Watch for shock — pale, cold, clammy skin, rapid breathing, confusion, weakness. Expect them to deteriorate and be ready to start CPR if they stop responding normally."
     ],
-    note: "This is also a crime scene. Preserve anything you're not directly using to save a life, and don't move the person more than you need to. Life-saving care always comes first regardless."
+    note: "This is also a crime scene. Preserve anything you're not directly using to save a life, and don't move the person more than you need to. Life-saving care always comes first regardless.",
+    sjaLink: "https://www.sja.org.uk/get-advice/first-aid-advice/bleeding/severe-bleeding/"
   },
   {
     title: "Gunshot wound",
@@ -126,7 +130,8 @@ const FIRST_AID = [
       "Keep reassuring them and keep them talking — a change in how they're responding is often the earliest sign of deterioration.",
       "Be ready to start CPR if they stop breathing normally or become unresponsive."
     ],
-    note: "Do not approach, move, or attempt to secure any weapon at the scene — that's what armed police are for. Your only job is staying safe yourself and keeping pressure on the wound."
+    note: "Do not approach, move, or attempt to secure any weapon at the scene — that's what armed police are for. Your only job is staying safe yourself and keeping pressure on the wound.",
+    sjaLink: "https://www.sja.org.uk/get-advice/first-aid-advice/bleeding/severe-bleeding/"
   },
   {
     title: "Burns and scalds",
@@ -138,7 +143,8 @@ const FIRST_AID = [
       "Do not use ice, creams, oils, or butter — they can trap heat and cause more damage.",
       "Do not burst any blisters."
     ],
-    note: "Call 999 or go to A&E for: burns larger than the person's palm, burns to the face, hands, feet, joints or genitals, deep burns of any size, chemical or electrical burns, or any burn on a baby or young child."
+    note: "Call 999 or go to A&E for: burns larger than the person's palm, burns to the face, hands, feet, joints or genitals, deep burns of any size, chemical or electrical burns, or any burn on a baby or young child.",
+    sjaLink: "https://www.sja.org.uk/first-aid-advice/severe-burn/"
   },
   {
     title: "Seizure",
@@ -150,7 +156,8 @@ const FIRST_AID = [
       "Cushion their head if you can, and once the jerking stops, roll them onto their side into the recovery position.",
       "Stay with them until they're fully recovered — they may be confused or drowsy afterward."
     ],
-    note: "Call 999 if: the seizure lasts longer than 5 minutes, they have another seizure straight after, they're injured, struggling to breathe afterward, or this is their first known seizure."
+    note: "Call 999 if: the seizure lasts longer than 5 minutes, they have another seizure straight after, they're injured, struggling to breathe afterward, or this is their first known seizure.",
+    sjaLink: "https://www.sja.org.uk/first-aid-advice/seizure/"
   },
   {
     title: "Severe allergic reaction (anaphylaxis)",
@@ -161,7 +168,8 @@ const FIRST_AID = [
       "Lay them flat and raise their legs, unless they're struggling to breathe, in which case let them sit up in whatever position is most comfortable.",
       "If symptoms haven't improved after 5–15 minutes and a second auto-injector is available, it can be given.",
       "Watch for signs they're deteriorating — difficulty breathing, swelling of the face or throat, dizziness, or loss of consciousness — and begin CPR if they stop breathing normally."
-    ]
+    ],
+    sjaLink: "https://www.sja.org.uk/first-aid-advice/anaphylaxis/"
   },
   {
     title: "Unresponsive but breathing normally",
@@ -172,7 +180,8 @@ const FIRST_AID = [
       "Pull the far knee up and roll them toward you onto their side, using the knee to stop them rolling too far.",
       "Tilt their head back slightly to keep the airway open, and check breathing continues.",
       "Call 999 and stay with them, monitoring breathing until help arrives."
-    ]
+    ],
+    sjaLink: "https://www.sja.org.uk/first-aid-advice/recovery-position/"
   }
 ];
 
@@ -203,7 +212,7 @@ const WALKING = [
   {
     title: "If you feel uneasy",
     steps: [
-      "Trust the instinct before you've worked out why — cross the street, change direction, or head into the nearest open shop or venue.",
+      "Trust your instinct before you've worked out why — cross the street, change direction, or head into the nearest open shop or venue.",
       "If you think you're being followed, don't go home directly — head to a public, populated place and call someone.",
       "If you're genuinely threatened, call 999. If you can't speak safely, dial 999 and press 55 when prompted — this is the Silent Solution and alerts police without you needing to talk."
     ]
@@ -211,7 +220,7 @@ const WALKING = [
 ];
 
 /* ==========================================================================
-   ON THE MOVE — driving and public transport
+   ON THE MOVE — driving, public transport, flying, boats, and hotels
    ========================================================================== */
 
 const TRAVEL = [
@@ -257,6 +266,38 @@ const TRAVEL = [
       "If you feel unsafe or witness something concerning on a train, text the British Transport Police on 61016. It's discreet and doesn't require a phone call.",
       "For an emergency on a train or at a station, call 999 — you can also use the emergency alarm/intercom on board."
     ]
+  },
+  {
+    title: "Flying — airports and check-in",
+    steps: [
+      "Check in online where possible so you spend less time queuing in exposed, crowded areas.",
+      "Keep passport, boarding pass and valuables together in one accessible place, not spread across different bags.",
+      "In departure areas, apply the same awareness you would in any crowded venue — know where the exits and staffed points are.",
+      "On arrival, use official taxi ranks or pre-booked transport rather than unmarked or unofficial touts offering rides.",
+      "Share your flight details and expected arrival time with someone before you fly."
+    ]
+  },
+  {
+    title: "Boats and ferries",
+    steps: [
+      "Locate the life jackets and your muster point before departure, not after something's already gone wrong.",
+      "If you're travelling as a foot passenger, know the walk-on route and where you'll disembark at the other end.",
+      "Favour open, populated decks over isolated areas where practical, especially on overnight crossings.",
+      "Follow crew instructions immediately during any announced drill or emergency — don't wait to see what everyone else does first."
+    ]
+  },
+  {
+    title: "Hotels — booking in and entering the room",
+    steps: [
+      "Where you can choose, ask for a room between the 3rd and 6th floors — high enough to deter casual access from ground level, low enough for a fire service ladder to reach if it ever comes to that.",
+      "At check-in, ask reception to write your room number down rather than say it aloud, and keep any printed key sleeve out of view of people nearby.",
+      "Once you have your key, find your two nearest fire exits or stairwells — not just the one closest to the lift — before you need them, not during an emergency.",
+      "Before you settle in, check the door and window locks work, and that there's a security chain or deadbolt in addition to the card lock.",
+      "Use the chain or deadbolt whenever you're in the room, not just the keycard lock alone.",
+      "Don't open the door to unexpected visitors, including hotel staff, without calling reception first to confirm they actually sent someone.",
+      "If something about the room or the situation feels wrong, ask to move or leave — the same instinct that applies everywhere else in this app applies here too."
+    ],
+    note: "Valuables in the room safe are deterred from casual opportunism, not guaranteed — it's a speed bump, not a lock."
   }
 ];
 
@@ -272,8 +313,8 @@ const RESPOND = [
     title: "Unwanted approaches or conversations",
     critical: false,
     steps: [
-      "Trust the instinct before you've worked out why. You don't need a reason to end a conversation or walk away.",
-      "Keep distance — don't let someone close the space between you, especially somewhere you can't see a clear exit.",
+      "Trust your instinct before you've worked out why. You don't need a reason to end a conversation or walk away.",
+      "Keep at least 2 metres of distance — don't let someone close that space, especially somewhere you can't see a clear exit.",
       "Keep responses short, flat and unemotional. Long explanations or arguing tends to extend the interaction, not end it.",
       "Move toward other people, staff, or a well-lit doorway rather than standing your ground to argue it out.",
       "If they follow you, head somewhere staffed — a shop, station or venue — and say clearly to a staff member: 'this person is following me.' Being visible ends most of these situations on its own.",

@@ -75,6 +75,7 @@
   const hospitalListEl = document.getElementById("hospital-list");
   const locateStatus = document.getElementById("locate-status");
   const locateBtn = document.getElementById("btn-locate");
+  const aeW3wLink = document.getElementById("ae-w3w-link");
 
   // NHS Organisation Data Service — open-access, no key, confirmed working
   // via direct browser fetch (no CORS block) and confirmed to support a
@@ -163,7 +164,7 @@
     }
     locateStatus.textContent = "Finding your location…";
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         const sorted = [...HOSPITALS].sort(
           (a, b) =>
@@ -171,7 +172,32 @@
             distanceKm(userCoords.lat, userCoords.lng, b.lat, b.lng)
         );
         renderHospitals(sorted, userCoords);
-        locateStatus.textContent = "Sorted by distance from your location.";
+        locateStatus.textContent = "Sorted by distance from your location, nearest first.";
+
+        // what3words as an option here too, same pattern as the Respond tab —
+        // helpful if you need to describe exactly where you are relative to
+        // a hospital, not just get directions to one.
+        if (aeW3wLink) {
+          if (W3W_API_KEY) {
+            try {
+              const res = await fetch(
+                `https://api.what3words.com/v3/convert-to-3wa?coordinates=${userCoords.lat},${userCoords.lng}&key=${W3W_API_KEY}&format=json`
+              );
+              const json = await res.json();
+              if (json && json.words) {
+                aeW3wLink.textContent = `///${json.words} — open in what3words →`;
+                aeW3wLink.href = `https://what3words.com/${json.words}`;
+                aeW3wLink.hidden = false;
+              }
+            } catch (e) {
+              aeW3wLink.hidden = true;
+            }
+          } else {
+            aeW3wLink.textContent = "Open my location in what3words →";
+            aeW3wLink.href = `https://what3words.com/${userCoords.lat},${userCoords.lng}`;
+            aeW3wLink.hidden = false;
+          }
+        }
       },
       (err) => {
         locateStatus.textContent =
@@ -200,6 +226,9 @@
 
       const stepsHtml = item.steps.map((s) => `<li>${s}</li>`).join("");
       const noteHtml = item.note ? `<p class="step-note">${item.note}</p>` : "";
+      const sjaHtml = item.sjaLink
+        ? `<a class="sja-link" href="${item.sjaLink}" target="_blank" rel="noopener">Full guide at St John Ambulance →</a>`
+        : "";
 
       wrap.innerHTML = `
         <button class="accordion-item__trigger">
@@ -209,6 +238,7 @@
         <div class="accordion-item__panel">
           <ol>${stepsHtml}</ol>
           ${noteHtml}
+          ${sjaHtml}
         </div>
       `;
 
