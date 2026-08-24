@@ -352,7 +352,7 @@ main { padding: 4px 18px 40px; }
   border: 1px solid var(--ink-line);
 }
 
-.w3w-link {
+.w3w-link:not([hidden]) {
   display: block;
   margin-top: 12px;
   font-size: 13.5px;

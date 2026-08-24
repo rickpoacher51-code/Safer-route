@@ -1,4 +1,4 @@
-const CACHE_NAME = "saferoute-v7";
+const CACHE_NAME = "saferoute-v8";
 const ASSETS = [
   "./",
   "./index.html",
