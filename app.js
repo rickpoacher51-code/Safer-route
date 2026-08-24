@@ -368,8 +368,25 @@
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("service-worker.js").catch(() => {
-        // Fails silently — app still works online without offline caching.
+      // updateViaCache: "none" makes the browser always fetch service-worker.js
+      // itself fresh over the network when checking for updates, rather than
+      // potentially reusing an HTTP-cached copy and never noticing a new
+      // version exists. Without this, GitHub Pages' own cache headers can
+      // hide an update for several minutes even across repeated reloads.
+      navigator.serviceWorker
+        .register("service-worker.js", { updateViaCache: "none" })
+        .catch(() => {
+          // Fails silently — app still works online without offline caching.
+        });
+
+      // Once a new service worker actually takes control, reload once so
+      // the page picks up the fresh assets automatically — no more manual
+      // "delete and re-add to home screen" needed for future updates.
+      let hasReloaded = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (hasReloaded) return;
+        hasReloaded = true;
+        window.location.reload();
       });
     });
   }
