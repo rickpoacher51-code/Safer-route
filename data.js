@@ -14,42 +14,54 @@ const W3W_API_KEY = "";
 
 /* ==========================================================================
    SafeRoute — content data
-   HOSPITALS: starter dataset only. ~28 major NHS A&E sites across England,
-   Scotland and Wales, coordinates approximate. This is NOT sourced from
-   the NHS Organisation Data Service and has NOT been field-verified.
-   Before any public release, replace this with a verified ODS export and
-   set up a refresh process — A&E departments close, relocate and merge.
+   HOSPITALS: starter dataset, ~28 major NHS A&E sites across England,
+   Scotland and Wales. Coordinates are postcode-geocoded via postcodes.io
+   (see note below) — accurate to postcode level, which is normally the
+   right building or street, not necessarily the exact A&E entrance. Site
+   selection (which 28 hospitals) and the postcodes themselves are still
+   NOT sourced from the NHS Organisation Data Service and have NOT been
+   field-verified. Before any public release, cross-check postcodes against
+   a verified ODS export and set up a refresh process — A&E departments
+   close, relocate and merge.
    ========================================================================== */
 
 const HOSPITALS = [
-  { name: "Milton Keynes University Hospital", address: "Standing Way, Eaglestone, Milton Keynes MK6 5LD", phone: "01908660033", lat: 52.0406, lng: -0.7594 },
-  { name: "John Radcliffe Hospital", address: "Headley Way, Headington, Oxford OX3 9DU", phone: "01865741166", lat: 51.7645, lng: -1.2201 },
-  { name: "Luton and Dunstable University Hospital", address: "Lewsey Road, Luton LU4 0DZ", phone: "01582491166", lat: 51.8748, lng: -0.4425 },
-  { name: "Bedford Hospital", address: "Kempston Road, Bedford MK42 9DJ", phone: "01234355122", lat: 52.1372, lng: -0.4739 },
-  { name: "Northampton General Hospital", address: "Cliftonville, Northampton NN1 5BD", phone: "01604634700", lat: 52.2372, lng: -0.8880 },
-  { name: "Stoke Mandeville Hospital", address: "Mandeville Road, Aylesbury HP21 8AL", phone: "01296315000", lat: 51.8107, lng: -0.7973 },
-  { name: "St Thomas' Hospital", address: "Westminster Bridge Road, London SE1 7EH", phone: "02071887188", lat: 51.4980, lng: -0.1188 },
-  { name: "The Royal London Hospital", address: "Whitechapel Road, London E1 1FR", phone: "02073777000", lat: 51.5185, lng: -0.0589 },
-  { name: "St Mary's Hospital", address: "Praed Street, Paddington, London W2 1NY", phone: "02033121000", lat: 51.5177, lng: -0.1741 },
-  { name: "University College Hospital", address: "235 Euston Road, London NW1 2BU", phone: "08453555000", lat: 51.5246, lng: -0.1349 },
-  { name: "King's College Hospital", address: "Denmark Hill, London SE5 9RS", phone: "02073374000", lat: 51.4686, lng: -0.0933 },
-  { name: "Queen Elizabeth Hospital Birmingham", address: "Mindelsohn Way, Edgbaston, Birmingham B15 2GW", phone: "01213713000", lat: 52.4530, lng: -1.9350 },
-  { name: "Birmingham Heartlands Hospital", address: "Bordesley Green East, Birmingham B9 5SS", phone: "01214241000", lat: 52.4859, lng: -1.8256 },
-  { name: "Leicester Royal Infirmary", address: "Infirmary Square, Leicester LE1 5WW", phone: "03001231000", lat: 52.6270, lng: -1.1362 },
-  { name: "Queen's Medical Centre, Nottingham", address: "Derby Road, Nottingham NG7 2UH", phone: "01159249924", lat: 52.9399, lng: -1.1868 },
-  { name: "Royal Derby Hospital", address: "Uttoxeter Road, Derby DE22 3NE", phone: "01332340131", lat: 52.9219, lng: -1.4643 },
-  { name: "Manchester Royal Infirmary", address: "Oxford Road, Manchester M13 9WL", phone: "01612761234", lat: 53.4620, lng: -2.2270 },
-  { name: "Salford Royal Hospital", address: "Stott Lane, Salford M6 8HD", phone: "01617894111", lat: 53.4880, lng: -2.3220 },
-  { name: "Leeds General Infirmary", address: "Great George Street, Leeds LS1 3EX", phone: "01132432799", lat: 53.8027, lng: -1.5522 },
-  { name: "Northern General Hospital", address: "Herries Road, Sheffield S5 7AU", phone: "01142434343", lat: 53.4084, lng: -1.4596 },
-  { name: "Bristol Royal Infirmary", address: "Marlborough Street, Bristol BS2 8HW", phone: "01173923000", lat: 51.4611, lng: -2.5900 },
-  { name: "Southampton General Hospital", address: "Tremona Road, Southampton SO16 6YD", phone: "02381777222", lat: 50.9330, lng: -1.4310 },
-  { name: "Addenbrooke's Hospital", address: "Hills Road, Cambridge CB2 0QQ", phone: "01223245151", lat: 52.1745, lng: 0.1409 },
-  { name: "Norfolk and Norwich University Hospital", address: "Colney Lane, Norwich NR4 7UY", phone: "01603286286", lat: 52.6188, lng: 1.2189 },
-  { name: "Royal Victoria Infirmary", address: "Queen Victoria Road, Newcastle upon Tyne NE1 4LP", phone: "01912336161", lat: 54.9773, lng: -1.6178 },
-  { name: "Glasgow Royal Infirmary", address: "84 Castle Street, Glasgow G4 0SF", phone: "01412114000", lat: 55.8629, lng: -4.2386 },
-  { name: "Royal Infirmary of Edinburgh", address: "51 Little France Crescent, Edinburgh EH16 4SA", phone: "01315361000", lat: 55.9210, lng: -3.1360 },
-  { name: "University Hospital of Wales", address: "Heath Park, Cardiff CF14 4XW", phone: "02920747747", lat: 51.5079, lng: -3.1791 },
+  // Coordinates geocoded from each postcode via postcodes.io (free, open UK
+  // postcode API, no key required — confirmed working via direct browser
+  // fetch, no CORS block). This replaces the original hand-typed
+  // coordinates, which were off by up to ~1.5km on at least one entry and
+  // were sending "Directions" to the wrong spot. Postcode-level accuracy is
+  // good (typically within the same building or street), not the same as a
+  // true building-entrance pin — still verify against ODS/nhs.uk before
+  // relying on this in a genuine emergency, per the in-app notice.
+  { name: "Milton Keynes University Hospital", address: "Standing Way, Eaglestone, Milton Keynes MK6 5LD", phone: "01908660033", lat: 52.0264, lng: -0.7358 },
+  { name: "John Radcliffe Hospital", address: "Headley Way, Headington, Oxford OX3 9DU", phone: "01865741166", lat: 51.7639, lng: -1.2198 },
+  { name: "Luton and Dunstable University Hospital", address: "Lewsey Road, Luton LU4 0DZ", phone: "01582491166", lat: 51.8943, lng: -0.4742 },
+  { name: "Bedford Hospital", address: "Kempston Road, Bedford MK42 9DJ", phone: "01234355122", lat: 52.1283, lng: -0.4725 },
+  { name: "Northampton General Hospital", address: "Cliftonville, Northampton NN1 5BD", phone: "01604634700", lat: 52.2361, lng: -0.8838 },
+  { name: "Stoke Mandeville Hospital", address: "Mandeville Road, Aylesbury HP21 8AL", phone: "01296315000", lat: 51.7980, lng: -0.8020 },
+  { name: "St Thomas' Hospital", address: "Westminster Bridge Road, London SE1 7EH", phone: "02071887188", lat: 51.4980, lng: -0.1189 },
+  { name: "The Royal London Hospital", address: "Whitechapel Road, London E1 1FR", phone: "02073777000", lat: 51.5187, lng: -0.0601 },
+  { name: "St Mary's Hospital", address: "Praed Street, Paddington, London W2 1NY", phone: "02033121000", lat: 51.5170, lng: -0.1735 },
+  { name: "University College Hospital", address: "235 Euston Road, London NW1 2BU", phone: "08453555000", lat: 51.5249, lng: -0.1369 },
+  { name: "King's College Hospital", address: "Denmark Hill, London SE5 9RS", phone: "02073374000", lat: 51.4681, lng: -0.0939 },
+  { name: "Queen Elizabeth Hospital Birmingham", address: "Mindelsohn Way, Edgbaston, Birmingham B15 2GW", phone: "01213713000", lat: 52.4518, lng: -1.9426 },
+  { name: "Birmingham Heartlands Hospital", address: "Bordesley Green East, Birmingham B9 5SS", phone: "01214241000", lat: 52.4802, lng: -1.8300 },
+  { name: "Leicester Royal Infirmary", address: "Infirmary Square, Leicester LE1 5WW", phone: "03001231000", lat: 52.6268, lng: -1.1360 },
+  { name: "Queen's Medical Centre, Nottingham", address: "Derby Road, Nottingham NG7 2UH", phone: "01159249924", lat: 52.9438, lng: -1.1860 },
+  { name: "Royal Derby Hospital", address: "Uttoxeter Road, Derby DE22 3NE", phone: "01332340131", lat: 52.9104, lng: -1.5135 },
+  { name: "Manchester Royal Infirmary", address: "Oxford Road, Manchester M13 9WL", phone: "01612761234", lat: 53.4625, lng: -2.2277 },
+  { name: "Salford Royal Hospital", address: "Stott Lane, Salford M6 8HD", phone: "01617894111", lat: 53.4876, lng: -2.3234 },
+  { name: "Leeds General Infirmary", address: "Great George Street, Leeds LS1 3EX", phone: "01132432799", lat: 53.8015, lng: -1.5517 },
+  { name: "Northern General Hospital", address: "Herries Road, Sheffield S5 7AU", phone: "01142434343", lat: 53.4098, lng: -1.4560 },
+  { name: "Bristol Royal Infirmary", address: "Marlborough Street, Bristol BS2 8HW", phone: "01173923000", lat: 51.4592, lng: -2.5961 },
+  { name: "Southampton General Hospital", address: "Tremona Road, Southampton SO16 6YD", phone: "02381777222", lat: 50.9330, lng: -1.4351 },
+  { name: "Addenbrooke's Hospital", address: "Hills Road, Cambridge CB2 0QQ", phone: "01223245151", lat: 52.1750, lng: 0.1406 },
+  { name: "Norfolk and Norwich University Hospital", address: "Colney Lane, Norwich NR4 7UY", phone: "01603286286", lat: 52.6176, lng: 1.2212 },
+  { name: "Royal Victoria Infirmary", address: "Queen Victoria Road, Newcastle upon Tyne NE1 4LP", phone: "01912336161", lat: 54.9802, lng: -1.6189 },
+  { name: "Glasgow Royal Infirmary", address: "84 Castle Street, Glasgow G4 0SF", phone: "01412114000", lat: 55.8640, lng: -4.2356 },
+  { name: "Royal Infirmary of Edinburgh", address: "51 Little France Crescent, Edinburgh EH16 4SA", phone: "01315361000", lat: 55.9218, lng: -3.1359 },
+  { name: "University Hospital of Wales", address: "Heath Park, Cardiff CF14 4XW", phone: "02920747747", lat: 51.5072, lng: -3.1899 },
 ];
 
 /* ==========================================================================
