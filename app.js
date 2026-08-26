@@ -111,7 +111,12 @@
         ? `${distanceKm(userCoords.lat, userCoords.lng, h.lat, h.lng).toFixed(1)} km`
         : "";
 
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${h.lat},${h.lng}`;
+      // dir (not search) — this actually starts turn-by-turn navigation.
+      // No origin specified: Google Maps defaults to the device's current
+      // location automatically, same as it does for a native Directions
+      // tap, and independent of whether this app's own "Use my location"
+      // has been granted — Maps handles that permission itself if needed.
+      const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lng}`;
 
       li.innerHTML = `
         <div class="hospital-card__top">
