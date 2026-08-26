@@ -85,11 +85,31 @@
   // req/sec and it's explicitly "not designed for high volume", which is
   // why this is an on-demand per-card check, not an automatic bulk refresh
   // of the whole list on every load.
+  //
+  // fetch() has NO default timeout — if this API is slow or unresponsive,
+  // the request can hang indefinitely with the button stuck on "Checking…"
+  // forever. AbortController forces it to give up after 10 seconds and
+  // report a clear failure instead of hanging silently.
   async function checkOdsStatus(hospitalName) {
     const url = `https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations?Name=${encodeURIComponent(
       hospitalName
     )}&Status=Active`;
-    const res = await fetch(url, { headers: { Accept: "application/json" } });
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    let res;
+    try {
+      res = await fetch(url, { headers: { Accept: "application/json" }, signal: controller.signal });
+    } catch (e) {
+      if (e.name === "AbortError") {
+        throw new Error("ODS request timed out");
+      }
+      throw e;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
     if (!res.ok) throw new Error("ODS request failed");
     const json = await res.json();
     const orgs = (json && json.Organisations) || [];
@@ -163,7 +183,10 @@
         resultEl.innerHTML = `<strong>${site.Status}</strong> — postcode ${site.PostCode}, NHS record last updated ${site.LastChangeDate}.`;
       }
     } catch (err) {
-      resultEl.textContent = "Couldn't reach the live NHS register right now — try again, or use nhs.uk/service-search directly.";
+      resultEl.textContent =
+        err.message === "ODS request timed out"
+          ? "The NHS register took too long to respond — it may be slow right now. Try again, or use nhs.uk/service-search directly."
+          : "Couldn't reach the live NHS register right now — try again, or use nhs.uk/service-search directly.";
     } finally {
       btn.disabled = false;
       btn.textContent = "Check live NHS status";
