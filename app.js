@@ -169,7 +169,8 @@
 
     const btn = e.target.closest(".verify-btn");
     if (!btn) return;
-    const resultEl = btn.nextElementSibling;
+    const resultEl = btn.closest(".hospital-card").querySelector(".verify-result");
+    if (!resultEl) return;
     btn.disabled = true;
     btn.textContent = "Checking…";
     resultEl.hidden = false;
