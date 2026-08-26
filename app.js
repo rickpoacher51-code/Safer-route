@@ -243,9 +243,13 @@
         locateStatus.textContent =
           err.code === err.PERMISSION_DENIED
             ? "Location permission denied — showing unsorted list. You can still search manually."
-            : "Couldn't get your location — showing unsorted list.";
+            : "Couldn't get your location — this can happen on laptops without GPS, which rely on slower WiFi-based positioning. Try again, ideally with WiFi on.";
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      // 20s, not 10 — WiFi-based positioning (laptops with no GPS chip) can
+      // genuinely take longer than GPS does on a phone. maximumAge: 30000
+      // lets it accept a position obtained up to 30s ago instead of always
+      // forcing a brand new fix, which helps a retry succeed faster.
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 30000 }
     );
   });
 
@@ -358,9 +362,9 @@
           respondStatus.textContent =
             err.code === err.PERMISSION_DENIED
               ? "Location permission denied — you can still describe landmarks to a 999 operator."
-              : "Couldn't get your location.";
+              : "Couldn't get your location — this can happen on laptops without GPS, which rely on slower WiFi-based positioning. Try again, ideally with WiFi on.";
         },
-        { enableHighAccuracy: true, timeout: 10000 }
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 30000 }
       );
     });
   }
