@@ -299,6 +299,108 @@
   buildAccordion("travel-accordion", TRAVEL, {});
   buildAccordion("respond-accordion", RESPOND, { showCriticalTag: true });
 
+  /* ---------- Respond tab: trusted contact + direct SMS location text ----------
+     Stored in localStorage, plaintext — same disclosed limitation as the rest
+     of the Prepare tab's data, not encrypted like the duress word. A name and
+     phone number on their own aren't in the same risk category as a duress
+     word, but say so plainly rather than let it go unstated.
+     ------------------------------------------------------------------------ */
+
+  const CONTACT_KEY = "saferoute_trusted_contact";
+  const contactForm = document.getElementById("contact-form");
+  const contactNameInput = document.getElementById("contact-name");
+  const contactPhoneInput = document.getElementById("contact-phone");
+  const contactStatus = document.getElementById("contact-status");
+  const textLocationBtn = document.getElementById("btn-text-location");
+  const textLocationStatus = document.getElementById("text-location-status");
+
+  function loadContact() {
+    try {
+      return JSON.parse(localStorage.getItem(CONTACT_KEY)) || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function refreshTextButtonLabel() {
+    const contact = loadContact();
+    if (contact && contact.name && contact.phone) {
+      textLocationBtn.disabled = false;
+      textLocationBtn.textContent = `Text my location to ${contact.name}`;
+    } else {
+      textLocationBtn.disabled = true;
+      textLocationBtn.textContent = "Set a trusted contact to enable texting your location";
+    }
+  }
+
+  if (contactForm) {
+    // Pre-fill the form if a contact is already saved, so re-opening the
+    // tab doesn't look like it forgot what you set.
+    const existing = loadContact();
+    if (existing) {
+      contactNameInput.value = existing.name || "";
+      contactPhoneInput.value = existing.phone || "";
+    }
+
+    contactForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = contactNameInput.value.trim();
+      const phone = contactPhoneInput.value.trim();
+      if (!name || !phone) {
+        contactStatus.textContent = "Enter both a name and a phone number.";
+        return;
+      }
+      try {
+        localStorage.setItem(CONTACT_KEY, JSON.stringify({ name, phone }));
+        contactStatus.textContent = "Contact saved on this device.";
+      } catch (e) {
+        contactStatus.textContent = "Couldn't save — storage may be full or unavailable.";
+      }
+      refreshTextButtonLabel();
+    });
+  }
+
+  refreshTextButtonLabel();
+
+  if (textLocationBtn) {
+    textLocationBtn.addEventListener("click", () => {
+      const contact = loadContact();
+      if (!contact) return; // button is disabled in this state, belt and braces
+
+      if (!("geolocation" in navigator)) {
+        textLocationStatus.textContent = "Location isn't available on this device or browser.";
+        return;
+      }
+      textLocationStatus.textContent = "Finding your location…";
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const body =
+            `My location: ${lat.toFixed(6)}, ${lng.toFixed(6)}\n` +
+            `https://what3words.com/${lat},${lng}\n\n(sent via SafeRoute)`;
+
+          // sms: URI separator is inconsistent across platforms — "?body="
+          // is what current iOS Safari and Android Chrome both accept; some
+          // older Android builds historically wanted ";body=" instead. If
+          // this opens Messages with an empty body on a given phone, that
+          // platform quirk is the reason, not a broken location fetch.
+          const smsUrl = `sms:${encodeURIComponent(contact.phone)}?body=${encodeURIComponent(body)}`;
+          textLocationStatus.textContent = `Opening a text to ${contact.name}…`;
+          window.location.href = smsUrl;
+        },
+        (err) => {
+          textLocationStatus.textContent =
+            err.code === err.PERMISSION_DENIED
+              ? "Location permission denied."
+              : "Couldn't get your location — this can happen on laptops without GPS. Try again.";
+        },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 30000 }
+      );
+    });
+  }
+
   /* ---------- Respond tab: exact location sharing ---------- */
 
   const shareLocationBtn = document.getElementById("btn-share-location");

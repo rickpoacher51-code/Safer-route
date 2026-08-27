@@ -96,9 +96,27 @@
         <p><strong>Verify before you rely on this.</strong> The terrorist incident guidance below mirrors the UK's national Run, Hide, Tell framework from Counter Terrorism Policing. It has not been checked against the current wording on <a href="https://www.protectuk.police.uk" target="_blank" rel="noopener">ProtectUK</a> or <a href="https://www.gov.uk" target="_blank" rel="noopener">gov.uk</a>. Always follow instructions from police or emergency services on the scene over anything written here.</p>
       </div>
 
+      <div class="tool-block">
+        <h3 class="tool-block__title">Trusted contact</h3>
+        <p class="tool-block__lede">Set this once. The button below texts your location straight to them — no share sheet, no picking someone each time.</p>
+        <form id="contact-form" class="tool-form">
+          <label>Name
+            <input type="text" id="contact-name" placeholder="e.g. Sarah">
+          </label>
+          <label>Phone number
+            <input type="tel" id="contact-phone" placeholder="+44 7...">
+          </label>
+          <button type="submit" class="btn btn--primary">Save contact</button>
+        </form>
+        <p class="field-status" id="contact-status" aria-live="polite"></p>
+      </div>
+
       <div class="locate-block">
         <button class="btn btn--primary" id="btn-share-location">Share my exact location</button>
         <p class="field-status" id="respond-locate-status" aria-live="polite"></p>
+
+        <button class="btn btn--secondary btn--stacked" id="btn-text-location" disabled>Set a trusted contact to enable texting your location</button>
+        <p class="field-status" id="text-location-status" aria-live="polite"></p>
 
         <div class="coord-readout" id="coord-readout" hidden>
           <p class="coord-readout__value" id="coord-value"></p>

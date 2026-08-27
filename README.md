@@ -47,6 +47,17 @@ Same pattern as Close Protection Ops: vanilla JS, deployable straight to GitHub 
   Everything else degrades gracefully without it; the map itself shows a
   plain text fallback message instead of crashing if Leaflet or the tiles
   fail to load.
+- **Trusted contact + direct location text** — set a name and phone number
+  once (Respond tab, `localStorage`, plaintext — not encrypted, disclosed
+  same as recce/RV plan data below), and a one-tap button texts your
+  current coordinates plus a what3words link straight to them via an
+  `sms:` link — no OS share sheet, no picking a recipient each time.
+  **Desktop browsers do not support `sms:` links** — this only works on an
+  actual phone. Testing it on a Mac/PC will silently do nothing; that's
+  expected, not a bug. The `sms:` URI's body-parameter separator
+  (`?body=` vs `;body=`) also isn't fully standardised across every
+  Android build — if a specific phone opens Messages with an empty body,
+  that's the platform, not a broken location fetch.
 - **Live NHS status check** — a "Check live NHS status" button per hospital
   card, on-demand only (not automatic), queries the NHS Organisation Data
   Service by name and shows current postcode, active/closed status, and
