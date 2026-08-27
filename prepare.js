@@ -31,6 +31,33 @@
     return div.innerHTML;
   }
 
+  // Shares (native share sheet) or copies (fallback) a plain-text summary
+  // of a saved plan — used by both recce and RV cards. Never called with
+  // duress-word content; see rvToShareText below, which excludes it by
+  // construction rather than by a flag someone could accidentally leave on.
+  async function sharePlanText(title, text, statusEl) {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text });
+        return;
+      } catch (e) {
+        // User cancelled the share sheet, or share failed — fall through
+        // to clipboard as a working fallback rather than doing nothing.
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      if (statusEl) {
+        statusEl.textContent = "Copied to clipboard.";
+        setTimeout(() => {
+          statusEl.textContent = "";
+        }, 4000);
+      }
+    } catch (e) {
+      if (statusEl) statusEl.textContent = "Couldn't share or copy — select and copy the text manually.";
+    }
+  }
+
   // Shared delete handler for every saved-card list in this tab.
   document.addEventListener("click", (e) => {
     const btn = e.target.closest(".saved-card__delete");
@@ -77,11 +104,38 @@
             ${row("Nearest help", r.help)}
             ${row("If separated", r.rv)}
             ${row("Notes", r.notes)}
+            <button class="share-btn" type="button" data-share-recce="${r.id}">Share plan</button>
+            <p class="share-status" hidden></p>
           </li>
         `;
       })
       .join("");
   }
+
+  // Every field here is safe to share — the recce form never collects
+  // anything as sensitive as the RV form's duress word.
+  function recceToShareText(r) {
+    const lines = [`SafeRoute recce — ${r.venue}`];
+    if (r.when) lines.push(`When: ${r.when}`);
+    if (r.entry) lines.push(`Entry: ${r.entry}`);
+    if (r.exit) lines.push(`Exit: ${r.exit}`);
+    if (r.chokepoints) lines.push(`Choke points: ${r.chokepoints}`);
+    if (r.help) lines.push(`Nearest help: ${r.help}`);
+    if (r.rv) lines.push(`If separated, meet at: ${r.rv}`);
+    if (r.notes) lines.push(`Notes: ${r.notes}`);
+    return lines.join("\n");
+  }
+
+  document.addEventListener("click", (e) => {
+    const shareBtn = e.target.closest("[data-share-recce]");
+    if (!shareBtn) return;
+    const id = shareBtn.dataset.shareRecce;
+    const record = loadList(RECCE_KEY).find((r) => r.id === id);
+    if (!record) return;
+    const statusEl = shareBtn.closest(".saved-card").querySelector(".share-status");
+    if (statusEl) statusEl.hidden = false;
+    sharePlanText(`SafeRoute recce — ${record.venue}`, recceToShareText(record), statusEl);
+  });
 
   const recceForm = document.getElementById("recce-form");
   if (recceForm) {
@@ -364,11 +418,39 @@
             ${row("Fallback RV", r.fallback)}
             ${row("Out-of-area contact", r.contact)}
             ${duressRow}
+            <button class="share-btn" type="button" data-share-rv="${r.id}">Share plan</button>
+            <p class="share-status" hidden></p>
           </li>
         `;
       })
       .join("");
   }
+
+  // Deliberately takes only the four safe fields as arguments — not the
+  // whole record — so there is no code path by which the duress word (or
+  // its ciphertext) can end up in shared text, now or in any future edit
+  // to this function. If someone needs the duress word, they use the
+  // Reveal button and read it themselves; it never goes through share.
+  function rvToShareText(name, members, primary, fallback, contact) {
+    const lines = [`SafeRoute RV plan — ${name}`];
+    if (members) lines.push(`Covers: ${members}`);
+    if (primary) lines.push(`Primary RV: ${primary}`);
+    if (fallback) lines.push(`Fallback RV: ${fallback}`);
+    if (contact) lines.push(`Out-of-area contact: ${contact}`);
+    return lines.join("\n");
+  }
+
+  document.addEventListener("click", (e) => {
+    const shareBtn = e.target.closest("[data-share-rv]");
+    if (!shareBtn) return;
+    const id = shareBtn.dataset.shareRv;
+    const record = loadList(RV_KEY).find((r) => r.id === id);
+    if (!record) return;
+    const statusEl = shareBtn.closest(".saved-card").querySelector(".share-status");
+    if (statusEl) statusEl.hidden = false;
+    const text = rvToShareText(record.name, record.members, record.primary, record.fallback, record.contact);
+    sharePlanText(`SafeRoute RV plan — ${record.name}`, text, statusEl);
+  });
 
   document.addEventListener("click", async (e) => {
     const btn = e.target.closest(".reveal-btn");

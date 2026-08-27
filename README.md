@@ -30,7 +30,14 @@ Same pattern as Close Protection Ops: vanilla JS, deployable straight to GitHub 
   is PIN-encrypted, AES-GCM via PBKDF2 — see below), and a guided "baseline
   awareness" tool (pick a setting, actively answer prompts about what's
   normal there, rather than read static bullets). All three persist locally
-  via `localStorage` and are editable/deletable.
+  via `localStorage` and are editable/deletable. Saved recce and RV plans
+  each have a "Share plan" button (native share sheet, clipboard-copy
+  fallback) so a plan can be sent to someone else before you go —
+  **`rvToShareText` takes only the four non-sensitive fields as arguments,
+  not the record itself, so the duress word has no code path into shared
+  text, now or after a future edit.** If that function's signature ever
+  changes to take the whole record instead, treat that as a regression to
+  catch in review, not a convenience.
 - **Live position map ("my location")** — a continuously-updating blue dot
   (Leaflet + OpenStreetMap tiles, `navigator.geolocation.watchPosition`),
   shown on the A&E tab alongside hospital markers and on the Respond tab to
