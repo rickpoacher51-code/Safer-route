@@ -12,13 +12,35 @@
 </head>
 <body>
 
-  <!-- Persistent emergency bar. Always visible. Never scrolls away. -->
+  <!-- Persistent emergency bar. Always visible. Never scrolls away.
+       Sits ABOVE the disclaimer gate below — 999 must stay reachable even
+       before a first-time user has accepted anything. -->
   <div class="sos-bar" role="banner">
     <a href="tel:999" class="sos-bar__call">
       <span class="sos-bar__label">Life-threatening emergency</span>
       <span class="sos-bar__number">Call 999</span>
     </a>
     <span class="sos-bar__connectivity" id="connectivity-indicator" aria-live="polite">Offline-ready</span>
+  </div>
+
+  <!-- Disclaimer gate. Shown once, on first launch — acknowledgement is
+       stored in localStorage so it never blocks fast access again. This
+       is a deliberate difference from a re-shown-every-time gate: the
+       whole point of this app is fast access during a crisis, and a
+       repeated click-through would work against that. -->
+  <div id="disclaimer-gate" class="disclaimer-gate" hidden>
+    <div class="disclaimer-gate__card">
+      <h1 class="disclaimer-gate__title">Before you continue</h1>
+      <div class="disclaimer-gate__body">
+        <p><strong>This app is not a substitute for emergency services.</strong> For a life-threatening emergency, call 999 first — the button above works right now, before you've read anything else on this screen.</p>
+        <p>SafeRoute provides general safety information — first aid guidance, hospital locations, and awareness content — for reference only. It is not medical, legal or professional advice. Several sections are explicitly flagged in-app as not yet independently verified; read the notices on the First Aid and Respond tabs.</p>
+        <p>The hospital directory is a development dataset. It may be inaccurate, out of date, or incomplete. Always confirm via <a href="https://www.nhs.uk/service-search" target="_blank" rel="noopener">nhs.uk/service-search</a>, or call 999 in a genuine emergency.</p>
+        <p>Information you enter — recce plans, RV points, a duress word, a trusted contact — is stored locally on your device. What is and isn't encrypted or protected is explained where you enter it, in the Prepare tab.</p>
+        <p>This app and its content are governed by the laws of England and Wales. Provided by RD Anzen Ltd, company number 08957578.</p>
+        <p class="disclaimer-gate__placeholder"><em>Placeholder — not yet solicitor-reviewed: liability position, and whether RD Anzen Ltd is the right publishing entity for a consumer safety app, need confirming before any public release. This text should not be relied on as final.</em></p>
+      </div>
+      <button class="btn btn--primary" id="btn-disclaimer-accept">I understand — continue</button>
+    </div>
   </div>
 
   <header class="app-header">

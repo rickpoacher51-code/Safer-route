@@ -92,6 +92,51 @@ a { color: var(--paper); }
   opacity: 0.85;
 }
 
+/* ---------- Disclaimer gate ----------
+   z-index 45, deliberately BELOW the SOS bar's 50, and top offset by
+   --sosbar-h — the 999 button must stay visible and clickable above this
+   overlay even before it's been dismissed. */
+
+.disclaimer-gate {
+  position: fixed;
+  top: var(--sosbar-h);
+  left: 0; right: 0; bottom: 0;
+  z-index: 45;
+  background: var(--ink);
+  overflow-y: auto;
+  padding: 24px 18px 40px;
+}
+
+.disclaimer-gate__card {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.disclaimer-gate__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 22px;
+  margin: 0 0 16px;
+}
+
+.disclaimer-gate__body p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--paper);
+  margin: 0 0 14px;
+}
+
+.disclaimer-gate__body a { color: var(--caution); }
+
+.disclaimer-gate__placeholder {
+  background: var(--ink-raised);
+  border: 1px solid var(--caution);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  color: var(--paper-dim) !important;
+  font-size: 12.5px !important;
+}
+
 /* ---------- Header ---------- */
 
 .app-header {

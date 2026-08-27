@@ -5,6 +5,18 @@ Same pattern as Close Protection Ops: vanilla JS, deployable straight to GitHub 
 
 ## What's actually in this build
 
+- **Disclaimer gate** — shown once, on first launch, below the persistent
+  999 bar (which stays clickable throughout — a first-time user in a real
+  crisis should never be blocked from calling 999 by a legal screen).
+  Acknowledgement persists in `localStorage`, so it never reappears and
+  slows down access during an actual emergency later. Content mirrors the
+  structure of the Close Protection Ops disclaimer (governing law: England
+  and Wales, RD Anzen Ltd company number 08957578) but is explicitly
+  marked in-app as **not solicitor-reviewed** — the liability wording and
+  whether RD Anzen is even the right publishing entity for a consumer app
+  are both open questions, not settled ones. Don't let this placeholder
+  text stand in for the real review before any public release.
+
 - **A&E finder** — geolocation-based distance sort against a hardcoded
   ~28-hospital dataset (`data.js`). This is a **starter dataset, not verified
   against the NHS Organisation Data Service**. It is flagged as such directly

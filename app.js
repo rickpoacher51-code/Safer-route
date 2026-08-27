@@ -1,6 +1,41 @@
 (function () {
   "use strict";
 
+  /* ---------- Disclaimer gate ----------
+     Versioned key: if the disclaimer text changes materially, bump _v1 to
+     _v2 so returning users see the new version once, rather than silently
+     carrying forward an acknowledgement of text that no longer exists. */
+
+  const DISCLAIMER_KEY = "saferoute_disclaimer_ack_v1";
+  const disclaimerGate = document.getElementById("disclaimer-gate");
+  const disclaimerAcceptBtn = document.getElementById("btn-disclaimer-accept");
+
+  if (disclaimerGate) {
+    let alreadyAccepted = false;
+    try {
+      alreadyAccepted = localStorage.getItem(DISCLAIMER_KEY) === "1";
+    } catch (e) {
+      // Storage unavailable (e.g. private browsing) — show the gate every
+      // time in that case rather than silently skip it.
+    }
+
+    if (!alreadyAccepted) {
+      disclaimerGate.hidden = false;
+    }
+
+    if (disclaimerAcceptBtn) {
+      disclaimerAcceptBtn.addEventListener("click", () => {
+        try {
+          localStorage.setItem(DISCLAIMER_KEY, "1");
+        } catch (e) {
+          // Can't persist it — gate will just show again next visit,
+          // not a failure worth blocking on.
+        }
+        disclaimerGate.hidden = true;
+      });
+    }
+  }
+
   /* ---------- Tab navigation ---------- */
 
   const tabs = document.querySelectorAll(".tabbar__item");
