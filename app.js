@@ -381,12 +381,21 @@
             `My location: ${lat.toFixed(6)}, ${lng.toFixed(6)}\n` +
             `https://what3words.com/${lat},${lng}\n\n(sent via SafeRoute)`;
 
+          // The phone number must NOT be percent-encoded the way the body
+          // is — a literal "+" needs to stay a literal "+" for the phone's
+          // SMS handler to recognise it as a recipient. encodeURIComponent
+          // turns "+" into "%2B", which some phones then fail to parse as a
+          // valid number, leaving the "to" field empty even though the
+          // message body comes through fine. Strip spaces/dashes/brackets
+          // instead of encoding, and leave the leading "+" untouched.
+          const cleanPhone = contact.phone.replace(/[\s\-()]/g, "");
+
           // sms: URI separator is inconsistent across platforms — "?body="
           // is what current iOS Safari and Android Chrome both accept; some
           // older Android builds historically wanted ";body=" instead. If
           // this opens Messages with an empty body on a given phone, that
           // platform quirk is the reason, not a broken location fetch.
-          const smsUrl = `sms:${encodeURIComponent(contact.phone)}?body=${encodeURIComponent(body)}`;
+          const smsUrl = `sms:${cleanPhone}?body=${encodeURIComponent(body)}`;
           textLocationStatus.textContent = `Opening a text to ${contact.name}…`;
           window.location.href = smsUrl;
         },
